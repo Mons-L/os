@@ -2,6 +2,6 @@
 
 int main(){
 
-    printf("gggg");
+    printf("gmmg");
     return 0;
 }
