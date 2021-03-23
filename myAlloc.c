@@ -20,7 +20,7 @@ typedef struct _BlockHeader {
             return l;
         }
         else{
-            return find(l->suivant, nbBytes);
+            return findEqualOrGreater(l->suivant, nbBytes); //Au début c'était find 
         }
     }    
  }
@@ -58,7 +58,7 @@ typedef struct _BlockHeader {
  }
 
 void* myAlloc(int nbBytes){
-    Liste memoireLibre;
+    Liste memoireLibre; //pas allouer de mémoire, y a rien dedans
     void* allocatedAddress = NULL;
     Liste l = findEqualOrGreater(memoireLibre, nbBytes);
     if(l != NULL){
