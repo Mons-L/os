@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <include/liste.h>
+#include "include/structure.h"
+#include "include/liste.h"
 
 Liste initListe(){
     Liste liste = malloc(sizeof(int));

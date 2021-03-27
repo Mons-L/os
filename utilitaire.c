@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <include/liste.h>
-#include <include/espaceMemoire.h>
+#include "include/structure.h"
+#include "include/liste.h"
+#include "include/espaceMemoire.h"
+#include "include/utilitaire.h"
+
 
 /* initialisation de la zone de travail*/
 int initMemory(int nbBytes){
@@ -49,7 +52,7 @@ void* myalloc(int nbBytes){
 		if(liste->blocMemoire.nbBytes == nbBytes){
 			addresseAllouee = liste->blocMemoire.adresse;
 			memoireAllouee = inserTete(memoireAllouee,nbBytes, liste->blocMemoire.adresse);
-			suppElt(memoireLibre, liste);
+			suppListe(memoireLibre, liste);
 		}
 		else{
 			//la liste1 correspond au nbre de bytes
@@ -62,20 +65,20 @@ void* myalloc(int nbBytes){
 				void* adresse = liste->blocMemoire.adresse + nbBytes - 1;
 				memoireLibre = inserTete(memoireLibre,nbBytesRestant,adresse);
 			}
-			memoireLibre = suppElt(memoireLibre, liste);
+			suppListe(memoireLibre, liste);
 		}        	
     }
     return addresseAllouee;
 }
 
  /*désallocation d'une zone adressée par un pointeur */
- int myfree(void *p){
+ int myfree(void* p){
     int nbBytes = -1;
-	Liste liste = trouveElt(memoireAllouee, p);
+	Liste liste = rechercheBlocMemoire(memoireAllouee, p);
 	if(p != NULL && liste != NULL ){
 		nbBytes = liste->blocMemoire.nbBytes;
 		memoireLibre = inserTete(memoireLibre,nbBytes,liste->blocMemoire.adresse);
-		suppElt(memoireAllouee,liste);
+		suppListe(memoireAllouee,liste);
 	}
     return nbBytes;
  }
