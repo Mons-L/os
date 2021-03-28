@@ -18,19 +18,31 @@ Liste inserTete(Liste liste, int nbBytes, void* adresse){
 }
 
 Liste suppTete(Liste liste) {
-    Liste listeTmp = liste ;
-    liste = liste -> suivant ;
-    free(listeTmp) ;
-    listeTmp = NULL ;
+    if(liste != NULL){
+        Liste listeTmp = liste ;
+        liste = liste->suivant ;
+        free(listeTmp) ;
+        listeTmp = NULL ;
+    }
     return liste ;
 }
 
-void suppListe(Liste liste, Liste listeAsupp){
-	while(liste != NULL && liste != listeAsupp)
-        liste = liste->suivant;
-
-	if(liste != NULL)
-        liste = suppTete(liste);
+Liste suppListe(Liste liste, Liste listeAsupp){
+    Liste listeTemp = liste;
+    if(liste == listeAsupp){
+        liste = suppTete(listeAsupp);
+    }
+    else{
+        Liste precedentListe = NULL;
+        while(listeTemp != NULL && listeTemp != listeAsupp){
+            precedentListe = listeTemp;
+            listeTemp = listeTemp->suivant;
+        }
+        listeTemp = suppTete(listeTemp);
+        if(precedentListe != NULL)
+            precedentListe->suivant = listeTemp;
+    }
+    return liste;
 }
 
 Liste rechercheElement(Liste liste, int nbBytes) {

@@ -22,7 +22,7 @@ Liste z = l;
         z = z->suivant;
     }
     printf("Apres : \n\n");
-    suppListe(l->suivant,l);
+    l = suppListe(l,l);
     z=l;
     while (z != NULL)
     {

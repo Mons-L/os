@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include "include/structure.h"
 #include "include/liste.h"
-#include "include/espaceMemoire.h"
 #include "include/utilitaire.h"
 
 
@@ -19,11 +18,12 @@ int main(){
 		printf("Initialisation de %d bits pour le programme reussi.\n",nbBits);
 
 	int nbByte1 = 600;
-	int nbByte2 = 10;
+	int nbByte2 = 110;
 	void* p1 = myalloc(nbByte1);
+	//memoireLibre = inserTete(memoireLibre,10,NULL);
 	void* p2 = myalloc(nbByte2);
-	int recup1 = myfree(p1);
-	int recup2 = myfree(p2);
+	//int recup1 = myfree(p1);
+	//int recup2 = myfree(p2);
 
 	if(p1 != NULL)
 		printf("Allocation de %d bits reussie.\n",nbByte1);
@@ -31,17 +31,18 @@ int main(){
 	if(p2 != NULL)
 		printf("Allocation de %d bits reussie.\n",nbByte2);
 
-	if(recup1 != -1)
+	/*if(recup1 != -1)
 		printf("Desallocation de %d bits reussi\n",recup1);
 
 	if(recup2 != -1)
 		printf("Desallocation de %d bits reussi\n",recup2);
-	
-	printf("Espace alloue : \n");
+	*/
+	printf("Espace alloue : { ");
 	while(memoireAllouee != NULL){
-		printf("%d bits \n",memoireAllouee->blocMemoire.nbBytes);
+		printf("%d bits ",memoireAllouee->blocMemoire.nbBytes);
 		memoireAllouee = memoireAllouee->suivant;
 	}
+	printf(" }\n");
 
 	printf("Espace libre : \n");
 	while(memoireLibre != NULL){

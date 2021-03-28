@@ -47,12 +47,40 @@ void* myalloc(int nbBytes){
 	void* addresseAllouee = NULL;
 	Liste liste = NULL;
     if(nbBytes > 0)
-        rechercheElement(memoireLibre,nbBytes);
+        liste = rechercheElement(memoireLibre,nbBytes);
 	if(liste != NULL){
 		if(liste->blocMemoire.nbBytes == nbBytes){
 			addresseAllouee = liste->blocMemoire.adresse;
+			printf("Avant insert : \n");
+			Liste z = memoireLibre;
+			printf("Memoire libre { ");
+			while(z != NULL){
+				printf("%d",z->blocMemoire.nbBytes);
+				z = z->suivant;
+			}
+			printf(" }\n\n");
+
 			memoireAllouee = inserTete(memoireAllouee,nbBytes, liste->blocMemoire.adresse);
-			suppListe(memoireLibre, liste);
+
+			printf("Avant suppr : \n");
+			z = memoireLibre;
+			printf("Memoire libre { ");
+			while(z != NULL){
+				printf("%d",z->blocMemoire.nbBytes);
+				z = z->suivant;
+			}
+			printf(" }\n\n");
+
+			memoireLibre = suppListe(memoireLibre, liste);
+
+			printf("Apres suppr : \n");
+			z = memoireLibre;
+			printf("Memoire libre { ");
+			while(z != NULL){
+				printf("%d",z->blocMemoire.nbBytes);
+				z = z->suivant;
+			}
+			printf(" }\n\n");
 		}
 		else{
 			//la liste1 correspond au nbre de bytes
