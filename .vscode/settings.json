@@ -4,6 +4,7 @@
         "espacememoire.h": "c",
         "liste.h": "c",
         "utilitaire.h": "c",
-        "structure.h": "c"
+        "structure.h": "c",
+        "stdlib.h": "c"
     }
 }
