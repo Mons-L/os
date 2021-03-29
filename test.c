@@ -40,15 +40,13 @@ int main(int argc, char *argv[]){
                 case 1:
                     printf("Combien de bytes ?\t");
                     scanf("%d",&nbBytes);
-                    if(initMemory(nbBytes) == 0)     printf("Initialisation de la zone de travail echouee (%d bytes)\n",nbBytes);
-                    else    printf("Initialisation de la zone de travail reussie (%d bytes)\n",nbBytes);
+                    initMemoryMessage(initMemory(nbBytes),nbBytes);
                     break;
 
                 case 2:
                     printf("Combien de bytes ?\t");
                     scanf("%d",&nbBytes);
-                    if(myalloc(5) != NULL)    printf("Allocation de memoire dans la zone de travail reussi (%d bytes)\n",nbBytes);
-                    else    printf("Allocation de memoire dans la zone de travail echouee (%d bytes)\n",nbBytes);
+                    myallocMessage(myalloc(5),nbBytes);
                     //printf("%p",adresse);
                     break;
 
