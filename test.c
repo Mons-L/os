@@ -86,7 +86,7 @@ int main(int argc, char *argv[]){
         printf("\nBienvenue dans le mode batch du programme\n");
         FILE *fichier;
         int nbMots,nbCar = 0;
-        char** contenue;
+        char** mots;
         char caractere;
         char* filename;
         getopt(argc,argv,":if:lrx");
@@ -97,35 +97,65 @@ int main(int argc, char *argv[]){
         fichier = fopen(filename,"r");
         FILE *f2 = fopen(filename,"r");
 
+        //On compte le nombre de mot pour l'initialisation du tableau de mots
         while((caractere=fgetc(f2)) != EOF){
             nbCar++;
             if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0')
                 nbMots++;
         }
+        //On incrémente le nombre de mot pour prendre en compte le dernier mot
         if(nbCar>0)
             nbMots++;
 
-        contenue = (char**)malloc(nbMots*sizeof(char*));
+        //On initialise le tableau de mots
+        mots = (char**)malloc(sizeof(char*)*nbMots);
         for(int i=0;i<nbMots;i++){
-            contenue[i] = (char*)malloc(sizeof(char)*MAX);
+            mots[i] = (char*)malloc(sizeof(char)*MAX);
         }
 
+        //On remplit le tableau de mots
         int i = 0;
         int j = 0;
         while((caractere=fgetc(fichier)) != EOF){
-            if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0')
+            if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0'){
+                while(j<MAX){
+                    mots[i][j] = '\0';
+                    j++;
+                }
                 i++;
+                j=0;
+            }
             else{
-                contenue[i][j] = caractere;
+                mots[i][j] = caractere;
                 j++;
             }
-            printf("%c",caractere);
         }
+        //printf("%s\n",mots[1]);
+        //On affiche les mots qui ont été lue
         for(int i=0;i<nbMots;i++){
-            printf("\nMot : %s\n",contenue[i]);
+            if(strcmp(mots[i],"InitMemory") == 0){
+                printf("\nInitMemory\n");
+                //exit(EXIT_FAILURE);
+            }
+            else if(strcmp(mots[i],"FreeMemory") == 0)
+                printf("\nFreeMemory\n");
+            else if(strcmp(mots[i],"Allocation") == 0)
+                printf("\nAllocation\n");
+            else if(strcmp(mots[i],"Desallocation") == 0){
+                printf("\nDesallocation\n");
+            }
+            else{
+                //exit(EXIT_FAILURE);
+            }
+            printf("%s\n",mots[i]);
+            //printf("%d\n",i);
         }
         
+
+        
+        //On ferme le fichier
         fclose(fichier);
+        fclose(f2);
     }    
    /* else{
         printf("Option non reconnue.\n");
