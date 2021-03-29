@@ -67,3 +67,7 @@ Liste rechercheElement(Liste liste, int element);
  * \return Une liste avec un bloc mémoire contenant une adresse mémoire égal à celle passée en paramètre ou NULL.
  */
 Liste rechercheBlocMemoire(Liste liste, void* p);
+
+int tailleListe(Liste liste);
+
+Liste rechercheParIndice(Liste liste, int i);

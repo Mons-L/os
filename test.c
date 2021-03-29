@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<math.h>
 #include <unistd.h>
 #include "include/structure.h"
 #include "include/liste.h"
@@ -83,7 +84,7 @@ int main(int argc, char *argv[]){
         gestionModeInteractif();
     }
     else if(argv[1][0] == '-' && argv[1][1] == 'f'){
-        printf("\nBienvenue dans le mode batch du programme\n");
+        printf("\nBienvenue dans le mode batch du programme\n\n");
         FILE *fichier;
         int nbMots,nbCar = 0;
         char** mots;
@@ -92,7 +93,7 @@ int main(int argc, char *argv[]){
         getopt(argc,argv,":if:lrx");
         filename = optarg;
 
-        printf("Voici le contenu du fichier %s : \n",optarg);
+        //printf("Voici le contenu du fichier %s : \n",optarg);
 
         fichier = fopen(filename,"r");
         FILE *f2 = fopen(filename,"r");
@@ -118,7 +119,7 @@ int main(int argc, char *argv[]){
         int j = 0;
         while((caractere=fgetc(fichier)) != EOF){
             if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0'){
-                while(j<MAX){
+                while(j<20){
                     mots[i][j] = '\0';
                     j++;
                 }
@@ -130,25 +131,86 @@ int main(int argc, char *argv[]){
                 j++;
             }
         }
-        //printf("%s\n",mots[1]);
+        //Remplir le tableau du dernier mot avec des cases vides
+        while(j<20){
+            mots[i][j] = '\0';
+            j++;
+        }
+
         //On affiche les mots qui ont été lue
         for(int i=0;i<nbMots;i++){
             if(strcmp(mots[i],"InitMemory") == 0){
-                printf("\nInitMemory\n");
-                //exit(EXIT_FAILURE);
+                i++;
+                int nbBytes = atoi(mots[i]);
+                int longueurInt = log10(nbBytes) + 1;
+                if(longueurInt != strlen(mots[i])){
+                    printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier\n",mots[i]);
+                    printf("Interruption du programme\n");
+                    exit(EXIT_FAILURE);
+                }
+                else{
+                    int status = initMemory(nbBytes);
+                    initMemoryMessage(status,nbBytes);
+                    if(status == 0) exit(EXIT_FAILURE);
+                    printf("\n");
+                }
             }
-            else if(strcmp(mots[i],"FreeMemory") == 0)
-                printf("\nFreeMemory\n");
-            else if(strcmp(mots[i],"Allocation") == 0)
-                printf("\nAllocation\n");
+            
+            else if(strcmp(mots[i],"FreeMemory") == 0){
+                int nbBytesRecupere = freeMemory();
+                freeMemoryMessage(nbBytesRecupere);
+                if(nbBytesRecupere == -1)   exit(EXIT_FAILURE);
+            }
+
+            else if(strcmp(mots[i],"Allocation") == 0){
+                i++;
+                int nbBytes = atoi(mots[i]);
+                int longueurInt = log10(nbBytes) + 1;
+                if(longueurInt != strlen(mots[i])){
+                    printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier\n",mots[i]);
+                    printf("Interruption du programme\n");
+                    exit(EXIT_FAILURE);
+                }
+                else{
+                    void* p = myalloc(nbBytes);
+                    myallocMessage(p,nbBytes);
+                    if(p == NULL) exit(EXIT_FAILURE);
+                    printf("\n");
+                }
+            }
+            
+
             else if(strcmp(mots[i],"Desallocation") == 0){
-                printf("\nDesallocation\n");
+                i++;
+                int indice = atoi(mots[i]);
+                int longueurInt = log10(indice) + 1;
+                if(longueurInt != strlen(mots[i])){
+                    printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier\n",mots[i]);
+                    printf("Interruption du programme\n");
+                    exit(EXIT_FAILURE);
+                }
+                else{
+                    int listeSize = tailleListe(memoireAllouee);
+                    if(listeSize >= indice){
+                        Liste listeAdesalloue = rechercheParIndice(memoireAllouee,listeSize-indice); 
+                        int nbBytesRecupere = myfree(listeAdesalloue->blocMemoire.adresse);
+                        myfreeMessage(nbBytesRecupere);
+                        if(nbBytesRecupere == -1) exit(EXIT_FAILURE);
+                        printf("\n");
+                    }
+                    else{
+                        printf("Erreur l'indice %d de l'element a desallouer est superieur au nombre d'element alloue\n",indice);
+                        printf("Interruption du programme\n");
+                        exit(EXIT_FAILURE);
+                    }
+                }
             }
+
             else{
-                //exit(EXIT_FAILURE);
+                printf("Erreur dans la syntaxe du fichier sur le mot : %s\n",mots[i]);
+                printf("Interruption du programme\n");
+                exit(EXIT_FAILURE);
             }
-            printf("%s\n",mots[i]);
-            //printf("%d\n",i);
         }
         
 

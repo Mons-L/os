@@ -134,3 +134,22 @@ Liste rechercheBlocMemoire(Liste liste, void *p)
     }
     return liste;
 }
+
+int tailleListe(Liste liste){
+    int i = 0;
+    while(liste != NULL){
+        i++;
+        liste = liste->suivant;
+    }
+    return i;
+}
+
+Liste rechercheParIndice(Liste liste, int i){
+    Liste listeTmp = liste;
+    int currentI = 0;
+    while(listeTmp != NULL && currentI < i){
+        listeTmp = listeTmp->suivant;
+        currentI++;
+    }
+    return listeTmp;
+}
