@@ -68,6 +68,17 @@ Liste rechercheElement(Liste liste, int element);
  */
 Liste rechercheBlocMemoire(Liste liste, void* p);
 
+/*!
+ * \brief Fonction permettant la récupération de la taille de la liste.
+ * \param [in] liste Liste pour laquelle on souhaite récupérer la taille. Type Liste.
+ * \return L'indice du dernier élèment de la liste.
+ */
 int tailleListe(Liste liste);
 
+/*!
+ * \brief Fonction permettant de rechercher l'indice d'un élément contenu dans la liste.
+ * \param [in] liste Liste où l'indice est recherché. Type Liste.
+ * \param [in] i L'indice recherché. Type int.
+ * \return Une liste temporaire avec l'indice de l'élément recherché.
+ */
 Liste rechercheParIndice(Liste liste, int i);
