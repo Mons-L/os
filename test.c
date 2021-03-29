@@ -6,36 +6,40 @@
 #include "include/espaceMemoire.h"
 #include "include/utilitaire.h"
 
+#define MAX 20
+#define CHOIX_INIT_MEMORY "Initialiser la zone de travail pour le programme [initMemory()]"
+#define CHOIX_FREE_MEMORY "Recuperer la zone de travail initialement reserve au programme [freeMemory()]"
+#define CHOIX_MYALLOC "Allouer de la memoire dans la zone de travail [myalloc(int nbBytes)]"
+#define CHOIX_MYFREE "Desallouer une zone adressee par un pointeur dans la zone de travail [myfree(void* p)]"
+#define CHOIX_QUITTER "Quitter le programme"
+char* choixString[5] = {CHOIX_INIT_MEMORY,CHOIX_FREE_MEMORY,CHOIX_MYALLOC,CHOIX_MYFREE,CHOIX_QUITTER};
+
 extern char *optarg;
 Liste memoireLibre, memoireAllouee;
 
 void afficherOptions(){
-    printf("1 : Initialiser la zone de travail pour le programme [initMemory()]\n");
-    printf("2 : Allouer de la memoire dans la zone de travail [myalloc(int nbBytes)]\n");
-    printf("3 : Desallouer une zone adressee par un pointeur dans la zone de travail [myfree(void* p)]\n");
-    printf("4 : Recuperer la zone de travail initialement reserve au programme [freeMemory()]\n");
-    printf("5 : Quitter le programme\n\n");
+    printf("\nQue souhaitez-vous faire ?\n");
+    printf("1 : %s\n",CHOIX_INIT_MEMORY);
+    printf("2 : %s\n",CHOIX_FREE_MEMORY);
+    printf("3 : %s\n",CHOIX_MYALLOC);
+    printf("4 : %s\n",CHOIX_MYFREE);
+    printf("5 : %s\n\n",CHOIX_QUITTER);
 }
 
-int main(int argc, char *argv[]){
-    /*printf("%d\n",argc);
-    for(int i=0; i<argc; i++){
-        printf("arg%d=%s\n",i,argv[i]);
-    }*/
+void recupererChoix(int* choix){
+    printf("Votre choix : ");
+    scanf("%d",choix);
+    printf("\nVous avez choisis : %s\n",choixString[*choix]);
+}
 
-    
-    if(argv[1][0] == '-' && argv[1][1] == 'i'){
-        //Gerer le mode interactif
-        printf("\nBienvenue dans le mode interactif du programme\n");
+void gestionModeInteractif(){
+    printf("\nBienvenue dans le mode interactif du programme\n");
         int choix = -1;
         int nbBytes = 0;
         void* adresse = NULL;
         do{
-            printf("\nQue souhaitez-vous faire ?\n");
             afficherOptions();
-            printf("Votre choix : ");
-            scanf("%d",&choix);
-            printf("Vous avez choisis %d\n",choix);
+            recupererChoix(&choix);
             switch (choix){
                 case 1:
                     printf("Combien de bytes ?\t");
@@ -44,18 +48,19 @@ int main(int argc, char *argv[]){
                     break;
 
                 case 2:
-                    printf("Combien de bytes ?\t");
-                    scanf("%d",&nbBytes);
-                    myallocMessage(myalloc(5),nbBytes);
-                    //printf("%p",adresse);
+                    freeMemoryMessage(freeMemory());
                     break;
 
                 case 3:
-                    printf("Desallocation de memoire dans la zone de travail\n");
+                    printf("Combien de bytes ?\t");
+                    scanf("%d",&nbBytes);
+                    myallocMessage(myalloc(nbBytes),nbBytes);
                     break;
 
                 case 4:
-                    printf("Recuperation de la zone memoire initialisee\n");
+                    printf("Quel est l'adresse memoire ?\t");
+                    scanf("%p",&adresse);
+                    myfreeMessage(myfree(adresse));
                     break;
 
                 case 5:
@@ -69,13 +74,19 @@ int main(int argc, char *argv[]){
             }
             sleep(2);
         }while(choix != 5);
+}
 
+int main(int argc, char *argv[]){
+
+    if(argv[1][0] == '-' && argv[1][1] == 'i'){
+        //Gerer le mode interactif
+        gestionModeInteractif();
     }
     else if(argv[1][0] == '-' && argv[1][1] == 'f'){
-        printf("C'est le mode batch\n\n");
-
-        //Faire le mode batch
+        printf("\nBienvenue dans le mode batch du programme\n");
         FILE *fichier;
+        int nbMots,nbCar = 0;
+        char** contenue;
         char caractere;
         char* filename;
         getopt(argc,argv,":if:lrx");
@@ -84,11 +95,36 @@ int main(int argc, char *argv[]){
         printf("Voici le contenu du fichier %s : \n",optarg);
 
         fichier = fopen(filename,"r");
+        FILE *f2 = fopen(filename,"r");
 
-        while((caractere=fgetc(fichier)) != EOF){
-            printf("%c",caractere);
+        while((caractere=fgetc(f2)) != EOF){
+            nbCar++;
+            if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0')
+                nbMots++;
+        }
+        if(nbCar>0)
+            nbMots++;
+
+        contenue = (char**)malloc(nbMots*sizeof(char*));
+        for(int i=0;i<nbMots;i++){
+            contenue[i] = (char*)malloc(sizeof(char)*MAX);
         }
 
+        int i = 0;
+        int j = 0;
+        while((caractere=fgetc(fichier)) != EOF){
+            if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0')
+                i++;
+            else{
+                contenue[i][j] = caractere;
+                j++;
+            }
+            printf("%c",caractere);
+        }
+        for(int i=0;i<nbMots;i++){
+            printf("\nMot : %s\n",contenue[i]);
+        }
+        
         fclose(fichier);
     }    
    /* else{

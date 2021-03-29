@@ -111,16 +111,33 @@ void* myalloc(int nbBytes){
     return nbBytes;
  }
 
-void myallocMessage(void* p,int nbBytes){
-	if(p != NULL)
-		printf("Allocation de memoire dans la zone de travail reussi (%d bytes)\n",nbBytes);
-	else
-		printf("Allocation de memoire dans la zone de travail echouee (%d bytes)\n",nbBytes);
-}
-
-void initMemoryMessage(int nbBytesAlloue,int nbBytes){
+ void initMemoryMessage(int nbBytesAlloue,int nbBytes){
 	 if(nbBytesAlloue == 0)     
 	 	printf("Initialisation de la zone de travail echouee (%d bytes)\n",nbBytes);
     else    
 		printf("Initialisation de la zone de travail reussie (%d bytes)\n",nbBytes);
 }
+
+void freeMemoryMessage(int nbBytesRecupere){
+	if(nbBytesRecupere == -1)
+		printf("Recuperation de la zone memoire initialisee pour le programme echouee\n");
+	else
+		printf("Recuperation de la zone memoire initialisee pour le programme reussie %d bytes recupere\n",nbBytesRecupere);
+}
+
+void myallocMessage(void* p,int nbBytes){
+	if(p != NULL){
+		printf("Allocation de memoire dans la zone de travail reussi (%d bytes)\n",nbBytes);
+		printf("L'adresse allouee est %p\n",p);
+	}
+	else
+		printf("Allocation de memoire dans la zone de travail echouee (%d bytes)\n",nbBytes);
+}
+
+void myfreeMessage(int nbBytesRecupere){
+	if(nbBytesRecupere == -1)
+		printf("Desallocation de memoire dans la zone de travail echouee\n");
+	else
+		printf("Desallocation de memoire dans la zone de travail reussi %d bytes recupere\n",nbBytesRecupere);
+}
+
