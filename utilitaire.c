@@ -129,7 +129,7 @@ void* myalloc(int nbBytes){
 				void* adresse = liste->blocMemoire.adresse + nbBytes - 1;
 				memoireLibre = inserTete(memoireLibre,nbBytesRestant,adresse);
 			}
-			suppListe(memoireLibre, liste);
+			memoireLibre = suppListe(memoireLibre, liste);
 		}        	
     }
     return addresseAllouee;
@@ -150,7 +150,8 @@ void* myalloc(int nbBytes){
 	if(p != NULL && liste != NULL ){
 		nbBytes = liste->blocMemoire.nbBytes;
 		memoireLibre = inserTete(memoireLibre,nbBytes,liste->blocMemoire.adresse);
-		suppListe(memoireAllouee,liste);
+		memoireAllouee = suppListe(memoireAllouee,liste);
+		//memoireLibre = defragmentation(memoireLibre); A TESTER
 	}
     return nbBytes;
  }
@@ -201,5 +202,26 @@ void myfreeMessage(int nbBytesRecupere){
 		printf("Desallocation de memoire dans la zone de travail echouee\n");
 	else
 		printf("Desallocation de memoire dans la zone de travail reussi %d bytes recupere\n",nbBytesRecupere);
+}
+
+Liste defragmentation(Liste liste){
+	Liste listeTemp = liste;
+	int defragmente = 0;
+	while(listeTemp != NULL && defragmente == 0){
+		Liste listeCourante = listeTemp;
+		while (listeCourante != NULL){
+			if(listeTemp->blocMemoire.adresse+listeTemp->blocMemoire.nbBytes == listeCourante->blocMemoire.adresse){
+				int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
+				liste = inserTete(liste,nbBytes,listeTemp->blocMemoire.adresse);
+				defragmente = 1;
+				break;
+			}
+			listeCourante = listeCourante->suivant;
+		}
+		listeTemp = listeTemp->suivant;		
+	}
+	if(defragmente)
+		liste = defragmentation(liste);
+	return liste;
 }
 
