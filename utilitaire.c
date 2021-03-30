@@ -225,3 +225,60 @@ Liste defragmentation(Liste liste){
 	return liste;
 }
 
+char** fileToTab(char* filename,int longMaxMot){
+
+	FILE *fichier;
+    int nbMots,nbCar = 0;
+    char** mots;
+    char caractere;
+
+	fichier = fopen(filename,"r");
+
+    FILE *f2 = fopen(filename,"r");
+
+    
+    //On compte le nombre de mot pour l'initialisation du tableau de mots
+    while((caractere=fgetc(f2)) != EOF){
+        nbCar++;
+        if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0')
+            nbMots++;
+    }
+    //On incrémente le nombre de mot pour prendre en compte le dernier mot
+    if(nbCar>0)
+        nbMots++;
+
+    //On initialise le tableau de mots
+    mots = (char**)malloc(sizeof(char*)*nbMots);
+    for(int i=0;i<nbMots;i++){
+        mots[i] = (char*)malloc(sizeof(char)*longMaxMot);
+    }
+
+    //On remplit le tableau de mots
+    int i = 0;
+    int j = 0;
+    while((caractere=fgetc(fichier)) != EOF){
+        if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0'){
+            while(j<20){
+                mots[i][j] = '\0';
+                j++;
+            }
+            i++;
+            j=0;
+        }
+        else{
+            mots[i][j] = caractere;
+            j++;
+        }
+    }
+    //Remplir le tableau du dernier mot avec des cases vides
+    while(j<20){
+        mots[i][j] = '\0';
+        j++;
+    }
+
+	//On ferme le fichier
+    fclose(fichier);
+    fclose(f2);
+	return mots;
+}
+

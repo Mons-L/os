@@ -79,56 +79,10 @@ void gestionModeInteractif(){
 
 void gestionModeBatch(char* filename){
     printf("\nBienvenue dans le mode batch du programme\n\n");
-    FILE *fichier;
-    int nbMots,nbCar = 0;
-    char** mots;
-    char caractere;
-
-    //printf("Voici le contenu du fichier %s : \n",optarg);
-
-    fichier = fopen(filename,"r");
-    FILE *f2 = fopen(filename,"r");
-
-    //On compte le nombre de mot pour l'initialisation du tableau de mots
-    while((caractere=fgetc(f2)) != EOF){
-        nbCar++;
-        if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0')
-            nbMots++;
-    }
-    //On incrémente le nombre de mot pour prendre en compte le dernier mot
-    if(nbCar>0)
-        nbMots++;
-
-    //On initialise le tableau de mots
-    mots = (char**)malloc(sizeof(char*)*nbMots);
-    for(int i=0;i<nbMots;i++){
-        mots[i] = (char*)malloc(sizeof(char)*MAX);
-    }
-
-    //On remplit le tableau de mots
-    int i = 0;
-    int j = 0;
-    while((caractere=fgetc(fichier)) != EOF){
-        if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0'){
-            while(j<20){
-                mots[i][j] = '\0';
-                j++;
-            }
-            i++;
-            j=0;
-        }
-        else{
-            mots[i][j] = caractere;
-            j++;
-        }
-    }
-    //Remplir le tableau du dernier mot avec des cases vides
-    while(j<20){
-        mots[i][j] = '\0';
-        j++;
-    }
-
-    //On affiche les mots qui ont été lue
+    char** mots = fileToTab(filename,MAX); 
+    int nbMots = sizeof(mots)+1;
+    
+    //effectue le traitement en fonction de ce qui a été lue
     for(int i=0;i<nbMots;i++){
         if(strcmp(mots[i],"InitMemory") == 0){
             i++;
@@ -203,12 +157,6 @@ void gestionModeBatch(char* filename){
             exit(EXIT_FAILURE);
         }
     }
-    
-
-    
-    //On ferme le fichier
-    fclose(fichier);
-    fclose(f2);
 }
 
 void gestionModeCli(int argc, char*argv[]){
