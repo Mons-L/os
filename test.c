@@ -206,15 +206,21 @@ void gestionModeBatch(char* filename){
     }
 }
 
+ /*!
+ * \brief Fonction permettant la désallocation dynamique d'espace dans une zone adressée par un pointeur.
+ * \param [in] argc entier permettant la récupération du nombre d'arguments passé en paramètre. Type int.
+ * \param [in] argv[] tableau de chaînes de caractères contenant les arguments. Type char*.
+ */
 void gestionModeCli(int argc, char*argv[]){
     printf("C'est le mode CLI\n");
-    //Faire la ligne de commande
     // int getopt();
     int test;
+    // Tant que A REVOIR
     while ((test = getopt(argc, argv, "m:a:d:l"))!= -1){
         int nbBytes,status,longueurInt,selectionne, listeSize;
         void* p = NULL;
         switch(test){
+            // Si l'utilisateur entre le charactère 'm', une initialisation de la mémoire sera effectuée.
             case 'm':
                 nbBytes = 0;
                 nbBytes = atoi(optarg);
@@ -228,7 +234,8 @@ void gestionModeCli(int argc, char*argv[]){
                 if(status == 0) exit(EXIT_FAILURE);
                 printf("\n");
                 break;
-            
+
+            // Si l'utilisateur entre le charactère 'a', une allocation de la mémoire sera effectuée.
             case 'a':
                 nbBytes = 0;
                 nbBytes = atoi(optarg);
@@ -243,6 +250,7 @@ void gestionModeCli(int argc, char*argv[]){
                 printf("\n");;
                 break;
 
+            // Si l'utilisateur entre le charactère 'd', une désallocation de la mémoire sera effectuée.
             case 'd':
                 selectionne = 0;
                 selectionne = atoi(optarg);
@@ -259,6 +267,7 @@ void gestionModeCli(int argc, char*argv[]){
                 printf("\n");;
                 break;
 
+            // Si l'utilisateur entre le charactère 'l', une libération de la mémoire sera effectuée.
             case 'l':
                 nbBytes = freeMemory();
                 freeMemoryMessage(nbBytes);
@@ -268,20 +277,28 @@ void gestionModeCli(int argc, char*argv[]){
     }
 }
 
+/*!
+ * \brief Fonction principale permettante la gestion des différents mode proposé à l'utilisateur.
+ * \param [in] argc entier permettant la récupération du nombre d'arguments passé en paramètre. Type int.
+ * \param [in] argv[] tableau de chaînes de caractères contenant les arguments. Type char*.
+ * \return 0
+ */
 int main(int argc, char *argv[]){
 
+    // Si l'argument entré par l'utilisateur est '-i', le mode intéractif est lancée.
     if(argv[1][0] == '-' && argv[1][1] == 'i'){
         gestionModeInteractif();
     }
+    // Si l'argument entré par l'utilisateur est '-f', le mode batch est lancée.
     else if(argv[1][0] == '-' && argv[1][1] == 'f'){
         getopt(argc,argv,":if:lrx");
         char* filename = optarg;
         gestionModeBatch(filename);
-    }    
+    }  
+    // Si l'argument entré par l'utilisateur n'est ni '-i', ni '-f', le mode ligne de commande est lancée.  
     else{
         gestionModeCli(argc,argv);
     }
     
     return 0;
 }
-

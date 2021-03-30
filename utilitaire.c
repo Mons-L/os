@@ -204,56 +204,84 @@ void myfreeMessage(int nbBytesRecupere){
 		printf("Desallocation de memoire dans la zone de travail reussi %d bytes recupere\n",nbBytesRecupere);
 }
 
+/*!
+ * \brief Fonction permettant la défragmentation d'une liste
+ * \param [in, out] liste Liste à défragmenter. Type Liste.
+ * \return Une liste défragmentée.
+ */
 Liste defragmentation(Liste liste){
+	// Création d'une liste temporaire.
 	Liste listeTemp = liste;
+	// Création d'un entier permettant de connaitre l'état de la défragmentation.
 	int defragmente = 0;
+	
+	// Tant que la liste temporaire n'est pas égal à nulle et que la défragmentation est égale à 0
+	// La liste temporaire est égale à la liste courante.
 	while(listeTemp != NULL && defragmente == 0){
 		Liste listeCourante = listeTemp;
+		// Tant que la liste courante n'est pas égale à nulle et que l'adresse de la liste 
+		// temporaire additionée de son nombre de byte est égal à l'adresse de la liste courante,
+		// on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
+		// de bytes de la liste courante.
 		while (listeCourante != NULL){
 			if(listeTemp->blocMemoire.adresse+listeTemp->blocMemoire.nbBytes == listeCourante->blocMemoire.adresse){
 				int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
+				// On effectue ensuite une insertion en tête de la liste A REVOIR
 				liste = inserTete(liste,nbBytes,listeTemp->blocMemoire.adresse);
+				// Et on associe à l'entier "defragmentate" la valeur 1.
+				// Cela afin d'indiquer que la liste a été défragmentée.
 				defragmente = 1;
 				break;
 			}
+			// On effectue ces mêmes opérations à la liste suivant la liste courante.
+			// Cela afin de parcourir toute la liste initiale.
 			listeCourante = listeCourante->suivant;
 		}
 		listeTemp = listeTemp->suivant;		
 	}
+	// Si l'entier "defragmente" est égal à 1, on défragmente une seconde fois la liste défragmentée.
 	if(defragmente)
 		liste = defragmentation(liste);
 	return liste;
 }
 
+/*!
+ * \brief Fonction permettant de remplir un tableau à partir d'un fichier.
+ * \param [in] filename Caractère du chemin où se trouve le chemin. Type char.
+ * \param [in] longMaxMot Entier représentant la taille de la longueur maximal d'un mot. Type int.
+ * \return Les caractères d'un fichier.
+ */
 char** fileToTab(char* filename,int longMaxMot){
-
 	FILE *fichier;
     int nbMots,nbCar = 0;
     char** mots;
     char caractere;
 
+	// Ouverture du fichier grâce au chemin passé en paramètre.
 	fichier = fopen(filename,"r");
-
     FILE *f2 = fopen(filename,"r");
 
-    
-    //On compte le nombre de mot pour l'initialisation du tableau de mots
+    // Tant que le fichier n'est pas arriver à sa fin,
+	// on incrémente le nombre de mot afin de connaitre le nombre de caractère.
     while((caractere=fgetc(f2)) != EOF){
         nbCar++;
-        if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0')
+		// Si les caractères sont égals à un espace, un \t, un \n ou un \0, le nombre de mot est incrémenté.
+		// Cela afin d'initialiser un tableau de mots.
+		if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0')
             nbMots++;
     }
-    //On incrémente le nombre de mot pour prendre en compte le dernier mot
+
+    // On incrémente le nombre de mot de 1 afin de prendre en compte le dernier mot du fichier.
     if(nbCar>0)
         nbMots++;
 
-    //On initialise le tableau de mots
+    // On initialise le tableau de mots.
     mots = (char**)malloc(sizeof(char*)*nbMots);
     for(int i=0;i<nbMots;i++){
         mots[i] = (char*)malloc(sizeof(char)*longMaxMot);
     }
 
-    //On remplit le tableau de mots
+    // On remplit le tableau de mots.
     int i = 0;
     int j = 0;
     while((caractere=fgetc(fichier)) != EOF){
@@ -270,13 +298,13 @@ char** fileToTab(char* filename,int longMaxMot){
             j++;
         }
     }
-    //Remplir le tableau du dernier mot avec des cases vides
+    // On remplit le tableau du dernier mot avec des cases vides.
     while(j<20){
         mots[i][j] = '\0';
         j++;
     }
 
-	//On ferme le fichier
+	// Puis on ferme le fichier.
     fclose(fichier);
     fclose(f2);
 	return mots;
