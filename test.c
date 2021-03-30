@@ -6,7 +6,7 @@
  * \date 2 avril 2021
  * 
  * Ce fichier contient les programmes permettant de tester les fonctions suivant différents modes:
- * mode intéractif, mode "ligne de commande", et mode batch.
+ * le mode intéractif, le mode batch et le mode "ligne de commande"
  */
 #include<stdio.h>
 #include<stdlib.h>
