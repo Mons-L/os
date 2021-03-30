@@ -1,3 +1,13 @@
+/*!
+ * \file test.c
+ * \brief Fichier qui comporte les programmes de test des différentes fonctions créees.
+ * \author Salma BENCHELKHA - Mouncif LEKMITI - Farah MANOUBI
+ * \version 1.0
+ * \date 2 avril 2021
+ * 
+ * Ce fichier contient les programmes permettant de tester les fonctions suivant différents modes:
+ * mode intéractif, mode "ligne de commande", et mode batch.
+ */
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
@@ -18,6 +28,10 @@ char* choixString[5] = {CHOIX_INIT_MEMORY,CHOIX_FREE_MEMORY,CHOIX_MYALLOC,CHOIX_
 extern char *optarg;
 Liste memoireLibre, memoireAllouee;
 
+
+/*!
+ * \brief Fonction qui affiche les différentes options disponibles pour le mode intéractif.
+ */
 void afficherOptions(){
     printf("\nQue souhaitez-vous faire ?\n");
     printf("1 : %s\n",CHOIX_INIT_MEMORY);
@@ -27,43 +41,56 @@ void afficherOptions(){
     printf("5 : %s\n\n",CHOIX_QUITTER);
 }
 
+/*!
+ * \brief Fonction qui récupère le choix de l'utilisateur pour le mode intéractif.
+ */
 void recupererChoix(int* choix){
     printf("Votre choix : ");
     scanf("%d",choix);
     printf("\nVous avez choisis : %s\n",choixString[*choix]);
 }
 
+/*!
+ * \brief Fonction qui gère les intéractions avec l'utilisateur en fonction des options choisiespar ce dernier.
+ */
 void gestionModeInteractif(){
     printf("\nBienvenue dans le mode interactif du programme\n");
         int choix = -1;
         int nbBytes = 0;
         void* adresse = NULL;
         do{
+            //Affiche les options et récupère le choix de l'utilisateur.
             afficherOptions();
             recupererChoix(&choix);
+
+            //Différents cas sont réalisés selon l'option choisie.
             switch (choix){
+                //Initialisation de la mémoire
                 case 1:
                     printf("Combien de bytes ?\t");
                     scanf("%d",&nbBytes);
                     initMemoryMessage(initMemory(nbBytes),nbBytes);
                     break;
-
+                //Recupere la zone de travail initialement reserve au programme freeMemory.
                 case 2:
                     freeMemoryMessage(freeMemory());
                     break;
 
+                //Allocation de la mémoire .
                 case 3:
                     printf("Combien de bytes ?\t");
                     scanf("%d",&nbBytes);
                     myallocMessage(myalloc(nbBytes),nbBytes);
                     break;
 
+                //Désalloue de la mémoire
                 case 4:
                     printf("Quel est l'adresse memoire ?\t");
                     scanf("%p",&adresse);
                     myfreeMessage(myfree(adresse));
                     break;
 
+                //Permet de quitter le programme
                 case 5:
                     printf("arret du programme\n");
                     choix = 5;
@@ -77,22 +104,31 @@ void gestionModeInteractif(){
         }while(choix != 5);
 }
 
+/*!
+ * \brief Fonction qui gère le mode batch permettant de lire des opérations définies dans un fichier de configuration.
+ */
 void gestionModeBatch(char* filename){
     printf("\nBienvenue dans le mode batch du programme\n\n");
     char** mots = fileToTab(filename,MAX); 
     int nbMots = sizeof(mots)+1;
     
-    //effectue le traitement en fonction de ce qui a été lue
+    //Effectue le traitement en fonction de ce qui a été lue
     for(int i=0;i<nbMots;i++){
+
+        //Si le mot lu est InitMemory on initialise la mémoire.
         if(strcmp(mots[i],"InitMemory") == 0){
             i++;
             int nbBytes = atoi(mots[i]);
             int longueurInt = log10(nbBytes) + 1;
+
+            //Si l'entier contient des lettres, le programme sera interrompu.
             if(longueurInt != strlen(mots[i])){
                 printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier\n",mots[i]);
                 printf("Interruption du programme\n");
                 exit(EXIT_FAILURE);
             }
+
+            //Récupère le nombre de bits afin d'initialiser la mémoire.
             else{
                 int status = initMemory(nbBytes);
                 initMemoryMessage(status,nbBytes);
@@ -101,21 +137,27 @@ void gestionModeBatch(char* filename){
             }
         }
         
+        //Si le mot lu est FreeMemory,on récupère de la mémoire au niveau de la zone initialement réservée.
         else if(strcmp(mots[i],"FreeMemory") == 0){
             int nbBytesRecupere = freeMemory();
             freeMemoryMessage(nbBytesRecupere);
             if(nbBytesRecupere == -1)   exit(EXIT_FAILURE);
         }
 
+        //Si le mot lu est Allocation, on alloue de la mémoire.
         else if(strcmp(mots[i],"Allocation") == 0){
             i++;
             int nbBytes = atoi(mots[i]);
             int longueurInt = log10(nbBytes) + 1;
+
+            //Si l'entier contient des lettres, le programme sera interrompu.
             if(longueurInt != strlen(mots[i])){
                 printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier\n",mots[i]);
                 printf("Interruption du programme\n");
                 exit(EXIT_FAILURE);
             }
+
+            //Récupère le nombre de bits afin d'allouer de la mémoire.
             else{
                 void* p = myalloc(nbBytes);
                 myallocMessage(p,nbBytes);
@@ -124,16 +166,21 @@ void gestionModeBatch(char* filename){
             }
         }
         
-
+        //Si le mot lu est Desallocation, on désalloue de la mémoire.
         else if(strcmp(mots[i],"Desallocation") == 0){
             i++;
             int indice = atoi(mots[i]);
             int longueurInt = log10(indice) + 1;
+
+            //Si l'entier contient des lettres, le programme sera interrompu.
             if(longueurInt != strlen(mots[i])){
                 printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier\n",mots[i]);
                 printf("Interruption du programme\n");
                 exit(EXIT_FAILURE);
             }
+
+            //On récupère la taille de la liste afin de la parcourir et de désallouer en fonction des allocations faîtes précédemment.
+            //La recherche de l'indice se fait dans le sens inverse de la liste.
             else{
                 int listeSize = tailleListe(memoireAllouee);
                 if(listeSize >= indice){
