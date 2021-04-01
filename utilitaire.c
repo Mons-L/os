@@ -146,7 +146,7 @@ void* myalloc(int nbBytes){
 		nbBytes = liste->blocMemoire.nbBytes;
 		memoireLibre = inserTete(memoireLibre,nbBytes,liste->blocMemoire.adresse);
 		memoireAllouee = suppListe(memoireAllouee,liste);
-		//memoireLibre = defragmentation(memoireLibre); A TESTER
+		memoireLibre = defragmentation(memoireLibre); //A TESTER
 	}
     return nbBytes;
  }
@@ -223,6 +223,15 @@ Liste defragmentation(Liste liste){
 				int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
 				// On effectue ensuite une insertion en tête de la liste A REVOIR
 				liste = inserTete(liste,nbBytes,listeTemp->blocMemoire.adresse);
+				// Et on associe à l'entier "defragmentate" la valeur 1.
+				// Cela afin d'indiquer que la liste a été défragmentée.
+				defragmente = 1;
+				break;
+			}
+			else if(listeCourante->blocMemoire.adresse+listeCourante->blocMemoire.nbBytes == listeTemp->blocMemoire.adresse){
+				int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
+				// On effectue ensuite une insertion en tête de la liste A REVOIR
+				liste = inserTete(liste,nbBytes,listeCourante->blocMemoire.adresse);
 				// Et on associe à l'entier "defragmentate" la valeur 1.
 				// Cela afin d'indiquer que la liste a été défragmentée.
 				defragmente = 1;
