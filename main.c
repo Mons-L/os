@@ -62,9 +62,9 @@ int main(){
 
 	// Test de l'initialisation de la mémoire.
 	printf("\nFonction : initMemory(nbBytes)\n");
-	printf("Test de l'initialisation de la memoire avec 1000 bytes.\n");
+	printf("Test de l'initialisation de la memoire avec 900 bytes.\n");
 	printf("Attendu : Reussite.\n");
-	int nbByte = 600;
+	int nbByte = 900;
 	int initialisation = initMemory(nbByte);
 
 	if(initialisation == 0)
@@ -149,9 +149,9 @@ int main(){
 
 	// Test de l'allocation de mémoire après avoir libéré la mémoire.
 	printf("\nFonction : myalloc(nbBytes)\n");
-	printf("Test de l'allocation de memoire de 1000 bytes apres la liberation de la memoire.\n");
+	printf("Test de l'allocation de memoire de 300 bytes apres la liberation de la memoire.\n");
 	printf("Attendu : Echec.\n");
-	nbBytes = 1000;
+	nbBytes = 300;
 	allocation = myalloc(nbBytes);
 
 	if(allocation != NULL)
@@ -170,7 +170,9 @@ int main(){
 	printf("Espace alloue {");
 	Liste lAllouee = memoireAllouee;
 	while(lAllouee != NULL){
-		printf("%d bytes, ",lAllouee->blocMemoire.nbBytes);
+		printf("p : %p - %d bytes",lAllouee->blocMemoire.adresse,lAllouee->blocMemoire.nbBytes);
+		if(lAllouee->suivant != NULL)
+			printf(", ");
 		lAllouee = lAllouee->suivant;
 	}
 	printf("}\n");
@@ -180,7 +182,9 @@ int main(){
 	printf("Espace libre {");
 	Liste lLibre = memoireLibre;
 	while(lLibre != NULL){
-		printf("%dbytes, ",lLibre->blocMemoire.nbBytes);
+		printf("p : %p - %d bytes",lLibre->blocMemoire.adresse,lLibre->blocMemoire.nbBytes);
+		if(lLibre->suivant != NULL)
+			printf(", ");
 		lLibre = lLibre->suivant;
 	}
 	printf("}\n\n");

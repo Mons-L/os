@@ -34,11 +34,11 @@ Liste memoireLibre, memoireAllouee;
  */
 void afficherOptions(){
     printf("\nQue souhaitez-vous faire ?\n");
-    printf("1 : %s\n",CHOIX_INIT_MEMORY);
-    printf("2 : %s\n",CHOIX_FREE_MEMORY);
-    printf("3 : %s\n",CHOIX_MYALLOC);
-    printf("4 : %s\n",CHOIX_MYFREE);
-    printf("5 : %s\n\n",CHOIX_QUITTER);
+    printf("1 : %s.\n",CHOIX_INIT_MEMORY);
+    printf("2 : %s.\n",CHOIX_FREE_MEMORY);
+    printf("3 : %s.\n",CHOIX_MYALLOC);
+    printf("4 : %s.\n",CHOIX_MYFREE);
+    printf("5 : %s.\n\n",CHOIX_QUITTER);
 }
 
 /*!
@@ -47,7 +47,8 @@ void afficherOptions(){
 void recupererChoix(int* choix){
     printf("Votre choix : ");
     scanf("%d",choix);
-    printf("\nVous avez choisis : %s\n",choixString[*choix]);
+    if(*choix <= 5)
+        printf("\nVous avez choisis : %s.\n",choixString[*choix-1]);
 }
 
 /*!
@@ -57,7 +58,7 @@ void gestionModeInteractif(){
     printf("\nBienvenue dans le mode interactif du programme\n");
         int choix = -1;
         int nbBytes = 0;
-        void* adresse = NULL;
+        int allocAdesalloc = 0;
         do{
             //Affiche les options et récupère le choix de l'utilisateur.
             afficherOptions();
@@ -71,6 +72,7 @@ void gestionModeInteractif(){
                     scanf("%d",&nbBytes);
                     initMemoryMessage(initMemory(nbBytes),nbBytes);
                     break;
+
                 //Recupere la zone de travail initialement reserve au programme freeMemory.
                 case 2:
                     freeMemoryMessage(freeMemory());
@@ -85,19 +87,25 @@ void gestionModeInteractif(){
 
                 //Désalloue de la mémoire
                 case 4:
-                    printf("Quel est l'adresse memoire ?\t");
-                    scanf("%p",&adresse);
-                    myfreeMessage(myfree(adresse));
+                    printf("Quelle allocation souhaitez-vous desallouer ?\t");
+                    scanf("%d",&allocAdesalloc);
+                    int listeSize = tailleListe(memoireAllouee);
+                    if(listeSize >= allocAdesalloc){
+                        Liste listeAdesalloue = rechercheParIndice(memoireAllouee,listeSize-allocAdesalloc); 
+                        myfreeMessage(myfree(listeAdesalloue->blocMemoire.adresse));
+                    }
+                    else
+                        printf("Erreur l'indice %d est superieur au nombre d'element alloue.\n",allocAdesalloc);
                     break;
 
                 //Permet de quitter le programme
                 case 5:
-                    printf("arret du programme\n");
+                    printf("Arret du programme.\n");
                     choix = 5;
                     break;
 
                 default:
-                    printf("Votre choix n'a pas ete reconnue, veuillez choisir un nombre entre 1 et 5");
+                    printf("Votre choix n'a pas ete reconnue, veuillez choisir un nombre entre 1 et 5.\n");
                     break;
             }
             sleep(2);
@@ -108,9 +116,10 @@ void gestionModeInteractif(){
  * \brief Fonction qui gère le mode batch permettant de lire des opérations définies dans un fichier de configuration.
  */
 void gestionModeBatch(char* filename){
-    printf("\nBienvenue dans le mode batch du programme\n\n");
+    printf("\nBienvenue dans le mode batch du programme.\n\n");
     char** mots = fileToTab(filename,MAX); 
-    int nbMots = sizeof(mots)+1;
+    int nbMots = (int)sizeof(mots)+1;
+    //printf("%d\n",nbMots);
     
     //Effectue le traitement en fonction de ce qui a été lue
     for(int i=0;i<nbMots;i++){
@@ -123,8 +132,8 @@ void gestionModeBatch(char* filename){
 
             //Si l'entier contient des lettres, le programme sera interrompu.
             if(longueurInt != strlen(mots[i])){
-                printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier\n",mots[i]);
-                printf("Interruption du programme\n");
+                printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier.\n",mots[i]);
+                printf("Interruption du programme.\n");
                 exit(EXIT_FAILURE);
             }
 
@@ -132,7 +141,10 @@ void gestionModeBatch(char* filename){
             else{
                 int status = initMemory(nbBytes);
                 initMemoryMessage(status,nbBytes);
-                if(status == 0) exit(EXIT_FAILURE);
+                if(status == 0){
+                    printf("Interruption du programme.\n");
+                    exit(EXIT_FAILURE);
+                } 
                 printf("\n");
             }
         }
@@ -141,7 +153,10 @@ void gestionModeBatch(char* filename){
         else if(strcmp(mots[i],"FreeMemory") == 0){
             int nbBytesRecupere = freeMemory();
             freeMemoryMessage(nbBytesRecupere);
-            if(nbBytesRecupere == -1)   exit(EXIT_FAILURE);
+            if(nbBytesRecupere == -1) {
+                printf("Interruption du programme.\n");
+                exit(EXIT_FAILURE);
+            } 
         }
 
         //Si le mot lu est Allocation, on alloue de la mémoire.
@@ -152,8 +167,8 @@ void gestionModeBatch(char* filename){
 
             //Si l'entier contient des lettres, le programme sera interrompu.
             if(longueurInt != strlen(mots[i])){
-                printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier\n",mots[i]);
-                printf("Interruption du programme\n");
+                printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier.\n",mots[i]);
+                printf("Interruption du programme.\n");
                 exit(EXIT_FAILURE);
             }
 
@@ -161,7 +176,10 @@ void gestionModeBatch(char* filename){
             else{
                 void* p = myalloc(nbBytes);
                 myallocMessage(p,nbBytes);
-                if(p == NULL) exit(EXIT_FAILURE);
+                if(p == NULL){
+                    printf("Interruption du programme.\n");
+                    exit(EXIT_FAILURE);
+                } 
                 printf("\n");
             }
         }
@@ -174,8 +192,8 @@ void gestionModeBatch(char* filename){
 
             //Si l'entier contient des lettres, le programme sera interrompu.
             if(longueurInt != strlen(mots[i])){
-                printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier\n",mots[i]);
-                printf("Interruption du programme\n");
+                printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier.\n",mots[i]);
+                printf("Interruption du programme.\n");
                 exit(EXIT_FAILURE);
             }
 
@@ -191,16 +209,16 @@ void gestionModeBatch(char* filename){
                     printf("\n");
                 }
                 else{
-                    printf("Erreur l'indice %d de l'element a desallouer est superieur au nombre d'element alloue\n",indice);
-                    printf("Interruption du programme\n");
+                    printf("Erreur l'indice %d de l'element a desallouer est superieur au nombre d'element alloue.\n",indice);
+                    printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
                 }
             }
         }
 
         else{
-            printf("Erreur dans la syntaxe du fichier sur le mot : %s\n",mots[i]);
-            printf("Interruption du programme\n");
+            printf("Erreur dans la syntaxe du fichier sur le mot : %s.\n",mots[i]);
+            printf("Interruption du programme.\n");
             exit(EXIT_FAILURE);
         }
     }

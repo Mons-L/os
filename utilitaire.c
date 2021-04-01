@@ -42,20 +42,19 @@ int initMemory(int nbBytes){
  */
 int freeMemory(){  
     int nbBytesRecupere = 0;
-    Liste liste;
 	// Elle permet, tant que la mémoire allouée n'est pas égale à nulle, de libérer toutes
 	// les adresses qu'elles a utilisées et la liste en elles-mêmes.
-	Liste listeTmpAllouee = memoireAllouee;
-    while(listeTmpAllouee != NULL){
-		myfree(listeTmpAllouee->blocMemoire.adresse);
-       // listeTmpAllouee = suppTete(listeTmpAllouee);
+    while(memoireAllouee != NULL){
+		int result = myfree(memoireAllouee->blocMemoire.adresse);
+		if(result == -1){
+			return -1;
+		}
     }
 	// Elle permet, tant que la mémoire libre n'est pas égale à nulle, de récupérer tout 
 	// les bytes utilisés dans le bloc mémoire et de libérer la liste.
-	Liste listeTmpLibre = memoireLibre;
-    while(listeTmpLibre != NULL){
-		nbBytesRecupere += listeTmpLibre->blocMemoire.nbBytes;
-        listeTmpLibre = suppTete(listeTmpLibre);
+    while(memoireLibre != NULL){
+		nbBytesRecupere += memoireLibre->blocMemoire.nbBytes;
+        memoireLibre = suppTete(memoireLibre);
     }
 	// Elle permet, si le nombre de byte récupéré est égal à 0, de le placer à -1 en cas d'erreur.
 	// Par exemple, si la mémoire a déja été libérée.
@@ -122,7 +121,7 @@ void* myalloc(int nbBytes){
 			//la liste2 correspond a l'element precdent -nbBytes
 			int nbBytesRestant = liste->blocMemoire.nbBytes - nbBytes;
 			if(nbBytesRestant > 0){
-				void* adresse = liste->blocMemoire.adresse + nbBytes - 1;
+				void* adresse = liste->blocMemoire.adresse + nbBytes;
 				memoireLibre = inserTete(memoireLibre,nbBytesRestant,adresse);
 			}
 			memoireLibre = suppListe(memoireLibre, liste);
@@ -159,9 +158,9 @@ void* myalloc(int nbBytes){
  */
  void initMemoryMessage(int nbBytesAlloue,int nbBytes){
 	 if(nbBytesAlloue == 0)     
-	 	printf("Initialisation de la zone de travail echouee (%d bytes)\n",nbBytes);
+	 	printf("Initialisation de la zone de travail echouee (%d bytes).\n",nbBytes);
     else    
-		printf("Initialisation de la zone de travail reussie (%d bytes)\n",nbBytes);
+		printf("Initialisation de la zone de travail reussie (%d bytes).\n",nbBytes);
 }
 
 /*!
@@ -170,9 +169,9 @@ void* myalloc(int nbBytes){
  */
 void freeMemoryMessage(int nbBytesRecupere){
 	if(nbBytesRecupere == -1)
-		printf("Recuperation de la zone memoire initialisee pour le programme echouee\n");
+		printf("Recuperation de la zone memoire initialisee pour le programme echouee.\n");
 	else
-		printf("Recuperation de la zone memoire initialisee pour le programme reussie %d bytes recupere\n",nbBytesRecupere);
+		printf("Recuperation de la zone memoire initialisee pour le programme reussie %d bytes recupere.\n",nbBytesRecupere);
 }
 
 /*!
@@ -182,11 +181,11 @@ void freeMemoryMessage(int nbBytesRecupere){
  */
 void myallocMessage(void* p,int nbBytes){
 	if(p != NULL){
-		printf("Allocation de memoire dans la zone de travail reussi (%d bytes)\n",nbBytes);
+		printf("Allocation de memoire dans la zone de travail reussi (%d bytes).\n",nbBytes);
 		printf("L'adresse allouee est %p\n",p);
 	}
 	else
-		printf("Allocation de memoire dans la zone de travail echouee (%d bytes)\n",nbBytes);
+		printf("Allocation de memoire dans la zone de travail echouee (%d bytes).\n",nbBytes);
 }
 
 /*!
@@ -195,9 +194,9 @@ void myallocMessage(void* p,int nbBytes){
  */
 void myfreeMessage(int nbBytesRecupere){
 	if(nbBytesRecupere == -1)
-		printf("Desallocation de memoire dans la zone de travail echouee\n");
+		printf("Desallocation de memoire dans la zone de travail echouee.\n");
 	else
-		printf("Desallocation de memoire dans la zone de travail reussi %d bytes recupere\n",nbBytesRecupere);
+		printf("Desallocation de memoire dans la zone de travail reussi %d bytes recupere.\n",nbBytesRecupere);
 }
 
 /*!
