@@ -1,12 +1,14 @@
 /*!
  * \file utilitaire.c
- * \brief Fichier d'implémentation des fonctions d'allocation et de désallocation de la mémoire.
+ * \brief Fichier contenant toutes les fonctions utiles à la manipulation de la mémoire.
  * \author Salma BENCHELKHA - Mouncif LEKMITI - Farah MANOUBI
  * \version 1.0
  * \date 2 avril 2021
  * \struct utilitaire.h
  * 
- * Ce fichier contient toutes les fonctions utiles à la manipulation de la mémoire.
+ * Ce fichier contient l'implémentation des fonctions d'initialisation, d'allocation, 
+ * de désallocation et de libération de la mémoire. Elle contient également une 
+ * une fonction permettant la défragmentation de l'espace mémoire.
  */
 
 #include <stdio.h>
@@ -19,10 +21,10 @@
 /*!
  * \brief Fonction permettant l'initialisation de la mémoire de la zone de travail.
  *        Elle permet d'allouer de la mémoire à l'aide du nombre de bytes passé en paramètre.
- * 		  Elle permet également de mettre à nul le nombre de bytes alloue, la mémoire allouée et la mémoire libre.
- * 		  Enfin, si l'adresse n'est pas égale à nul, elle effectue une insertion en tête en A REVOIR.
- * \param [in,out] nbBytes Nombre de byte du bloc mémoire. Type int.  
- * \return Un nombre de byte alloué.
+ * 		  Elle initialise la liste de mémoire libre avec le nombre de bytes passé en paramètre et
+ * 		  l'adresse de la mémoire initilisée. Elle initialise également la liste de mémoire allouée à NULL.
+ * \param [in,out] nbBytes Nombre de byte à initialiser. Type int.  
+ * \return Le nombre de byte alloué.
  */
 int initMemory(int nbBytes){
 	void* adresse = malloc(nbBytes);
@@ -38,92 +40,66 @@ int initMemory(int nbBytes){
 
 /*!
  * \brief Fonction permettant la récupération de la mémoire de la zone initialement réservée.
- * \return Le nombre de byte récupéré.
+ * \return Le nombre de byte récupéré ou -1 en cas d'echec.
  */
 int freeMemory(){  
     int nbBytesRecupere = 0;
-	// Elle permet, tant que la mémoire allouée n'est pas égale à nulle, de libérer toutes
-	// les adresses qu'elles a utilisées et la liste en elles-mêmes.
+	// Tant que la liste de mémoire allouée n'est pas vide, on libère toutes
+	// les adresses allouées grâce à la fonction myfree().
     while(memoireAllouee != NULL){
 		int result = myfree(memoireAllouee->blocMemoire.adresse);
 		if(result == -1){
 			return -1;
 		}
     }
-	// Elle permet, tant que la mémoire libre n'est pas égale à nulle, de récupérer tout 
-	// les bytes utilisés dans le bloc mémoire et de libérer la liste.
+	// Tant que la liste de mémoire libre n'est pas vide, on effectue la somme des bytes 
+	// qui seront récupérés. On supprime ensuite la liste.
     while(memoireLibre != NULL){
 		nbBytesRecupere += memoireLibre->blocMemoire.nbBytes;
         memoireLibre = suppTete(memoireLibre);
     }
-	// Elle permet, si le nombre de byte récupéré est égal à 0, de le placer à -1 en cas d'erreur.
-	// Par exemple, si la mémoire a déja été libérée.
+	// En cas d'erreur, le nombre de bytes récupéré est placé à -1.
     if(nbBytesRecupere == 0)
         nbBytesRecupere = -1;
     return nbBytesRecupere;
 }
 
 /*!
- * \brief Fonction permettant l'allocation dynamique d'espace dans la mémoire libre.
- * \param [in] nbBytes Nombre de byte du bloc mémoire. Type int.  
- * \return L'adresse allouée.
+ * \brief Fonction permettant l'allocation dynamique d'espace dans la zone de travail.
+ * \param [in] nbBytes Nombre de byte à alloué. Type int.  
+ * \return L'adresse allouée ou NULL en cas d'erreur.
  */
 void* myalloc(int nbBytes){
 	void* addresseAllouee = NULL;
 	Liste liste = NULL;
-	// Si le nombre de bytes est supérieur à 0, elle effectue une recherche d'élément dans la mémoire libre.
+	// Si le nombre de bytes est supérieur à 0, on recherche dans la mémoire libre 
+	// un bloc mémoire avec le nombre de bytes passé en paramètre.
     if(nbBytes > 0)
         liste = rechercheElement(memoireLibre,nbBytes);
-	// Si la liste n'est pas égal à nulle et si le nombre de bytes d'un bloc mémoire de la mémoire libre
-	// est égale au nombre de bytes passé en paramètre, l'adresse de ce bloc mémoire devient l'adresse allouée.
-	// La mémoire libre est ensuite attribué à la mémoire allouée.
 	if(liste != NULL){
+		// Si le nombre de bytes d'un bloc mémoire de la mémoire libre est égale au nombre de bytes 
+		// passé en paramètre, l'adresse allouée devient l'adresse contenue dans le bloc mémoire.
+		// On supprime ensuite ce bloc de la mémoire libre et on l'ajoute à la mémoire allouée.
 		if(liste->blocMemoire.nbBytes == nbBytes){
 			addresseAllouee = liste->blocMemoire.adresse;
-			printf("Avant insert : \n");
-			Liste z = memoireLibre;
-			printf("Memoire libre { ");
-			// Tant quand la mémoire allouée n'est pas égale à nulle, 
-			// on écrit le nombre de byte de chaque bloc mémoire de la mémoire allouée.
-			while(z != NULL){
-				printf("%d",z->blocMemoire.nbBytes);
-				z = z->suivant;
-			}
-			printf(" }\n\n");
-
 			memoireAllouee = inserTete(memoireAllouee,nbBytes, liste->blocMemoire.adresse);
-
-			printf("Avant suppr : \n");
-			z = memoireLibre;
-			printf("Memoire libre { ");
-			while(z != NULL){
-				printf("%d",z->blocMemoire.nbBytes);
-				z = z->suivant;
-			}
-			printf(" }\n\n");
-
 			memoireLibre = suppListe(memoireLibre, liste);
-
-			printf("Apres suppr : \n");
-			z = memoireLibre;
-			printf("Memoire libre { ");
-			while(z != NULL){
-				printf("%d",z->blocMemoire.nbBytes);
-				z = z->suivant;
-			}
-			printf(" }\n\n");
 		}
+		// Si le nombre de bytes d'un bloc mémoire de la mémoire libre est supérieur au nombre de bytes.
 		else{
-			//la liste1 correspond au nbre de bytes
+			// On ajoute un nouveau bloc avec le nombre de bytes passé en paramètre et l'adresse alloué.
 			memoireAllouee = inserTete(memoireAllouee,nbBytes, liste->blocMemoire.adresse);
 			addresseAllouee = liste->blocMemoire.adresse;
 			
-			//la liste2 correspond a l'element precdent -nbBytes
+			// On ajoute ensuite dans la mémoire libre un nouveau bloc mémoire avec :
+			// Pour adresse, l'adresse du bloc alloué additionné au nombre de bytes alloué à ce dernier.
+			// Pour nombre de bytes, le nombre de bytes initial soustrait avec le nombre de bytes alloué.
 			int nbBytesRestant = liste->blocMemoire.nbBytes - nbBytes;
 			if(nbBytesRestant > 0){
 				void* adresse = liste->blocMemoire.adresse + nbBytes;
 				memoireLibre = inserTete(memoireLibre,nbBytesRestant,adresse);
 			}
+			// On supprime ensuite ce bloc de la mémoire libre.
 			memoireLibre = suppListe(memoireLibre, liste);
 		}        	
     }
@@ -133,20 +109,20 @@ void* myalloc(int nbBytes){
 /*!
  * \brief Fonction permettant la désallocation dynamique d'espace dans une zone adressée par un pointeur.
  * \param [in] p pointeur vers l'adresse mémoire recherchée. Type void*.
- * \return Un nombre de byte.
+ * \return Le nombre de bytes récupéré ou -1 en cas d'erreur.
  */
  int myfree(void* p){
     int nbBytes = -1;
 	// On recherche un bloc mémoire dans la mémoire allouée avec le pointeur passé en paramètre.
 	Liste liste = rechercheBlocMemoire(memoireAllouee, p);
-	// Si le pointeur vers l'adresse mémoire recherchée et le bloc mémoire trouvé ne sont pas égal à nul,
-	// on effectue une insertion en tête de la mémoire libre du bloc mémoire trouvé précédemment.
+	// Si le pointeur vers l'adresse mémoire recherchée n'est pas NULL et qu'un bloc mémoire correspondant 
+	// à ce pointeur est trouvé, on insère le bloc mémoire, trouvé précédemment, dans la mémoire libre.
 	// On supprime ensuite ce bloc mémoire de la mémoire allouée.
 	if(p != NULL && liste != NULL ){
 		nbBytes = liste->blocMemoire.nbBytes;
 		memoireLibre = inserTete(memoireLibre,nbBytes,liste->blocMemoire.adresse);
 		memoireAllouee = suppListe(memoireAllouee,liste);
-		memoireLibre = defragmentation(memoireLibre); //A TESTER
+		//memoireLibre = defragmentation(memoireLibre); A TESTER
 	}
     return nbBytes;
  }
@@ -176,8 +152,8 @@ void freeMemoryMessage(int nbBytesRecupere){
 
 /*!
  * \brief Fonction permettant l'affichage des messages concernant l'allocation de mémoire.
- * \param [in] p pointeur vers l'adresse mémoire recherchée. Type void*.
- * \param [in] nbBytes Nombre de byte du bloc mémoire. Type int. 
+ * \param [in] p pointeur vers l'adresse mémoire allouée. Type void*.
+ * \param [in] nbBytes Nombre de byte alloué. Type int. 
  */
 void myallocMessage(void* p,int nbBytes){
 	if(p != NULL){
@@ -189,8 +165,8 @@ void myallocMessage(void* p,int nbBytes){
 }
 
 /*!
- * \brief Fonction permettant l'affichage des messages concernant la récupération de mémoire.
- * \param [in] nbBytesRecupere Nombre de byte récupéré du bloc mémoire. Type int. 
+ * \brief Fonction permettant l'affichage des messages concernant la désallocation de la mémoire.
+ * \param [in] nbBytesRecupere Nombre de byte récupéré. Type int. 
  */
 void myfreeMessage(int nbBytesRecupere){
 	if(nbBytesRecupere == -1)
@@ -200,66 +176,72 @@ void myfreeMessage(int nbBytesRecupere){
 }
 
 /*!
- * \brief Fonction permettant la défragmentation d'une liste
- * \param [in, out] liste Liste à défragmenter. Type Liste.
- * \return Une liste défragmentée.
+ * \brief Fonction permettant la défragmentation de la mémoire libre.
+ * \param [in, out] liste espace mémoire libre à défragmenter. Type Liste.
+ * \return Une liste d'espace mémoire libre défragmentée.
  */
 Liste defragmentation(Liste liste){ 
-    // Création d'une liste temporaire.
     Liste listeTemp = liste;
-    // Création d'un entier permettant de connaitre l'état de la défragmentation.
+    // Création d'un booleen permettant de connaitre l'état de la défragmentation.
     int defragmente = 0;
     
-    // Tant que la liste temporaire n'est pas égal à nulle et que la défragmentation est égale à 0
-    // La liste temporaire est égale à la liste courante.
     while(listeTemp != NULL && defragmente == 0){
         Liste listeCourante = listeTemp;
-        // Tant que la liste courante n'est pas égale à nulle et que l'adresse de la liste 
-        // temporaire additionée de son nombre de byte est égal à l'adresse de la liste courante,
-        // on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
-        // de bytes de la liste courante.
+        // Tant que la liste courante n'est pas égale à nulle et que l'adresse du bloc mémoire de la liste 
+        // temporaire additionée de son nombre de byte est égal à l'adresse du bloc mémoire de la liste courante,
         while (listeCourante != NULL){
             if(listeTemp->blocMemoire.adresse+listeTemp->blocMemoire.nbBytes == listeCourante->blocMemoire.adresse){
+				// on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
+        		// de bytes de la liste courante.
                 int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
-                // On effectue ensuite une insertion en tête de la liste A REVOIR
+
+                // On effectue ensuite une insertion en tête de la liste d'espace libre avec l'adresse mémoire de la
+				// liste temporaire et le nombre de bytes additionné précedemment.
                 liste = inserTete(liste,nbBytes,listeTemp->blocMemoire.adresse);
+				
+				// On supprime ensuite les deux blocs mémoires précedents de la liste de mémoire libre
                 liste = suppListe(liste, listeTemp);
                 liste = suppListe(liste, listeCourante);
 
-                // Et on associe à l'entier "defragmentate" la valeur 1.
+                // Et on affecte au bouleen "defragmentate" la valeur 1.
                 // Cela afin d'indiquer que la liste a été défragmentée.
                 defragmente = 1;
                 break;
             }
             else if(listeCourante->blocMemoire.adresse+listeCourante->blocMemoire.nbBytes == listeTemp->blocMemoire.adresse){
+				// on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
+        		// de bytes de la liste courante.
                 int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
-                // On effectue ensuite une insertion en tête de la liste A REVOIR
+
+                // On effectue ensuite une insertion en tête de la liste d'espace libre avec l'adresse mémoire de la
+				// liste courante et le nombre de bytes additionné précedemment.
                 liste = inserTete(liste,nbBytes,listeCourante->blocMemoire.adresse);
+
+				// On supprime ensuite les deux blocs mémoires précedents de la liste de mémoire libre
                 liste = suppListe(liste, listeTemp);
                 liste = suppListe(liste, listeCourante);
-                // Et on associe à l'entier "defragmentate" la valeur 1.
+                
+				// Et on affecte au bouleen "defragmentate" la valeur 1.
                 // Cela afin d'indiquer que la liste a été défragmentée.
                 defragmente = 1;
-                //break;
+                break;
             }
-            // On effectue ces mêmes opérations à la liste suivant la liste courante.
-            // Cela afin de parcourir toute la liste initiale.
             listeCourante = listeCourante->suivant;
         }
         listeTemp = listeTemp->suivant;     
     }
-    // Si l'entier "defragmente" est égal à 1, on défragmente une seconde fois la liste défragmentée.
+    // Si l'entier "defragmente" est égal à 1, on défragmente la nouvelle liste.
     if(defragmente)
         liste = defragmentation(liste);
     return liste;
 }
 
-
 /*!
  * \brief Fonction permettant de remplir un tableau à partir d'un fichier.
- * \param [in] filename Caractère du chemin où se trouve le chemin. Type char.
+ * \param [in] filename Chemin où se trouve le chemin. Type char*.
  * \param [in] longMaxMot Entier représentant la taille de la longueur maximal d'un mot. Type int.
- * \return Les caractères d'un fichier.
+ * \param [in, out] tailleTableau Entier où sera stocker la taille du tableau. Type int*.
+ * \return Un tableau contenant les mots du fichier passé en paramètre.
  */
 char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
 	FILE *fichier;
@@ -267,7 +249,7 @@ char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
     char** mots;
     char caractere;
 
-	// Ouverture du fichier grâce au chemin passé en paramètre.
+	// Ouverture du fichier en mode lecture grâce au chemin passé en paramètre.
 	fichier = fopen(filename,"r");
     FILE *f2 = fopen(filename,"r");
 
@@ -285,7 +267,7 @@ char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
     if(nbCar>0)
         nbMots++;
 
-    // On initialise le tableau de mots.
+    // On alloue la mémoire pour le tableau de mots.
     mots = (char**)malloc(sizeof(char*)*nbMots);
     for(int i=0;i<nbMots;i++){
         mots[i] = (char*)malloc(sizeof(char)*longMaxMot);
@@ -296,6 +278,7 @@ char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
     int j = 0;
     while((caractere=fgetc(fichier)) != EOF){
         if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0'){
+			// On remplit le tableau du mot avec des cases vides si toute la place n'est pas utilisée.
             while(j<20){
                 mots[i][j] = '\0';
                 j++;
@@ -308,12 +291,13 @@ char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
             j++;
         }
     }
-    // On remplit le tableau du dernier mot avec des cases vides.
+    // On remplit le tableau du dernier mot avec des cases vides si toute la place n'est pas utilisée.
     while(j<20){
         mots[i][j] = '\0';
         j++;
     }
 
+	//On affecte la taille du tableau de mots au pointeur tailleTableau
 	*tailleTableau = nbMots;
 
 	// Puis on ferme le fichier.

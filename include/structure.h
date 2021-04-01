@@ -27,7 +27,7 @@ typedef struct{
  *
  * Liste est un petit objet de gestion des listes. 
  * Le pointeur suivant pointe vers l'adresse de la cellule suivante et 
- * un blocMemoire est contenu dans chaque liste.
+ * un BlocMemoire est contenu dans chaque liste.
  */
 typedef struct cellule{
 	BlocMemoire blocMemoire;	/*!< Bloc mémoire. */
