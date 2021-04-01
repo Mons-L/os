@@ -204,50 +204,56 @@ void myfreeMessage(int nbBytesRecupere){
  * \param [in, out] liste Liste à défragmenter. Type Liste.
  * \return Une liste défragmentée.
  */
-Liste defragmentation(Liste liste){
-	// Création d'une liste temporaire.
-	Liste listeTemp = liste;
-	// Création d'un entier permettant de connaitre l'état de la défragmentation.
-	int defragmente = 0;
-	
-	// Tant que la liste temporaire n'est pas égal à nulle et que la défragmentation est égale à 0
-	// La liste temporaire est égale à la liste courante.
-	while(listeTemp != NULL && defragmente == 0){
-		Liste listeCourante = listeTemp;
-		// Tant que la liste courante n'est pas égale à nulle et que l'adresse de la liste 
-		// temporaire additionée de son nombre de byte est égal à l'adresse de la liste courante,
-		// on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
-		// de bytes de la liste courante.
-		while (listeCourante != NULL){
-			if(listeTemp->blocMemoire.adresse+listeTemp->blocMemoire.nbBytes == listeCourante->blocMemoire.adresse){
-				int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
-				// On effectue ensuite une insertion en tête de la liste A REVOIR
-				liste = inserTete(liste,nbBytes,listeTemp->blocMemoire.adresse);
-				// Et on associe à l'entier "defragmentate" la valeur 1.
-				// Cela afin d'indiquer que la liste a été défragmentée.
-				defragmente = 1;
-				break;
-			}
-			else if(listeCourante->blocMemoire.adresse+listeCourante->blocMemoire.nbBytes == listeTemp->blocMemoire.adresse){
-				int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
-				// On effectue ensuite une insertion en tête de la liste A REVOIR
-				liste = inserTete(liste,nbBytes,listeCourante->blocMemoire.adresse);
-				// Et on associe à l'entier "defragmentate" la valeur 1.
-				// Cela afin d'indiquer que la liste a été défragmentée.
-				defragmente = 1;
-				break;
-			}
-			// On effectue ces mêmes opérations à la liste suivant la liste courante.
-			// Cela afin de parcourir toute la liste initiale.
-			listeCourante = listeCourante->suivant;
-		}
-		listeTemp = listeTemp->suivant;		
-	}
-	// Si l'entier "defragmente" est égal à 1, on défragmente une seconde fois la liste défragmentée.
-	if(defragmente)
-		liste = defragmentation(liste);
-	return liste;
+Liste defragmentation(Liste liste){ 
+    // Création d'une liste temporaire.
+    Liste listeTemp = liste;
+    // Création d'un entier permettant de connaitre l'état de la défragmentation.
+    int defragmente = 0;
+    
+    // Tant que la liste temporaire n'est pas égal à nulle et que la défragmentation est égale à 0
+    // La liste temporaire est égale à la liste courante.
+    while(listeTemp != NULL && defragmente == 0){
+        Liste listeCourante = listeTemp;
+        // Tant que la liste courante n'est pas égale à nulle et que l'adresse de la liste 
+        // temporaire additionée de son nombre de byte est égal à l'adresse de la liste courante,
+        // on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
+        // de bytes de la liste courante.
+        while (listeCourante != NULL){
+            if(listeTemp->blocMemoire.adresse+listeTemp->blocMemoire.nbBytes == listeCourante->blocMemoire.adresse){
+                int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
+                // On effectue ensuite une insertion en tête de la liste A REVOIR
+                liste = inserTete(liste,nbBytes,listeTemp->blocMemoire.adresse);
+                liste = suppListe(liste, listeTemp);
+                liste = suppListe(liste, listeCourante);
+
+                // Et on associe à l'entier "defragmentate" la valeur 1.
+                // Cela afin d'indiquer que la liste a été défragmentée.
+                defragmente = 1;
+                break;
+            }
+            else if(listeCourante->blocMemoire.adresse+listeCourante->blocMemoire.nbBytes == listeTemp->blocMemoire.adresse){
+                int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
+                // On effectue ensuite une insertion en tête de la liste A REVOIR
+                liste = inserTete(liste,nbBytes,listeCourante->blocMemoire.adresse);
+                liste = suppListe(liste, listeTemp);
+                liste = suppListe(liste, listeCourante);
+                // Et on associe à l'entier "defragmentate" la valeur 1.
+                // Cela afin d'indiquer que la liste a été défragmentée.
+                defragmente = 1;
+                //break;
+            }
+            // On effectue ces mêmes opérations à la liste suivant la liste courante.
+            // Cela afin de parcourir toute la liste initiale.
+            listeCourante = listeCourante->suivant;
+        }
+        listeTemp = listeTemp->suivant;     
+    }
+    // Si l'entier "defragmente" est égal à 1, on défragmente une seconde fois la liste défragmentée.
+    if(defragmente)
+        liste = defragmentation(liste);
+    return liste;
 }
+
 
 /*!
  * \brief Fonction permettant de remplir un tableau à partir d'un fichier.
