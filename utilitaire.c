@@ -246,7 +246,7 @@ Liste defragmentation(Liste liste){
  * \param [in] longMaxMot Entier représentant la taille de la longueur maximal d'un mot. Type int.
  * \return Les caractères d'un fichier.
  */
-char** fileToTab(char* filename,int longMaxMot){
+char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
 	FILE *fichier;
     int nbMots,nbCar = 0;
     char** mots;
@@ -298,6 +298,8 @@ char** fileToTab(char* filename,int longMaxMot){
         mots[i][j] = '\0';
         j++;
     }
+
+	*tailleTableau = nbMots;
 
 	// Puis on ferme le fichier.
     fclose(fichier);

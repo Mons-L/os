@@ -10,6 +10,7 @@
  */
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include<math.h>
 #include <unistd.h>
 #include "include/structure.h"
@@ -117,9 +118,8 @@ void gestionModeInteractif(){
  */
 void gestionModeBatch(char* filename){
     printf("\nBienvenue dans le mode batch du programme.\n\n");
-    char** mots = fileToTab(filename,MAX); 
-    int nbMots = (int)sizeof(mots)+1;
-    //printf("%d\n",nbMots);
+    int nbMots ;
+    char** mots = fileToTab(filename,MAX,&nbMots); 
     
     //Effectue le traitement en fonction de ce qui a été lue
     for(int i=0;i<nbMots;i++){
@@ -157,6 +157,7 @@ void gestionModeBatch(char* filename){
                 printf("Interruption du programme.\n");
                 exit(EXIT_FAILURE);
             } 
+            printf("\n");
         }
 
         //Si le mot lu est Allocation, on alloue de la mémoire.
@@ -230,7 +231,7 @@ void gestionModeBatch(char* filename){
  * \param [in] argv[] tableau de chaînes de caractères contenant les arguments. Type char*.
  */
 void gestionModeCli(int argc, char*argv[]){
-    printf("C'est le mode CLI\n");
+    printf("Bienvenue dans le mode CLI.\n");
     // int getopt();
     int test;
     // Tant que A REVOIR
@@ -274,8 +275,12 @@ void gestionModeCli(int argc, char*argv[]){
                 selectionne = atoi(optarg);
                 longueurInt = log10(selectionne) + 1;
                 listeSize = tailleListe(memoireAllouee);
-                if(selectionne == 0 || longueurInt != strlen(optarg) || listeSize < selectionne){
-                    printf("Desallocation memoire : impossible, argument '%s' incorrect\n",optarg); 
+                if(selectionne == 0 || longueurInt != strlen(optarg)){
+                    printf("Desallocation memoire : impossible, argument '%s' incorrect.\n",optarg); 
+                    exit(EXIT_FAILURE);
+                }
+                else if(listeSize < selectionne){
+                    printf("Desallocation memoire : impossible, indice '%d' superieur au nombre d'element alloue.\n",selectionne); 
                     exit(EXIT_FAILURE);
                 }
                 Liste listeAdesalloue = rechercheParIndice(memoireAllouee,listeSize-selectionne);

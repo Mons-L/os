@@ -6,4 +6,4 @@ void initMemoryMessage(int nbBytesAlloue,int nbBytes);
 void freeMemoryMessage(int nbBytesRecupere);
 void myallocMessage(void* p,int nbBytes);
 void myfreeMessage(int nbBytesRecupere);
-char** fileToTab(char* filename,int longMaxMot);
+char** fileToTab(char* filename,int longMaxMot,int* nbMots);
