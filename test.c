@@ -246,6 +246,7 @@ void gestionModeCli(int argc, char*argv[]){
                 longueurInt = log10(nbBytes) + 1;
                 if(nbBytes == 0 || longueurInt != strlen(optarg)){
                     printf("Initialisation de la memoire: impossible, argument '%s' incorrect\n",optarg); 
+                    printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
                 }
                 status = initMemory(nbBytes);
@@ -261,6 +262,7 @@ void gestionModeCli(int argc, char*argv[]){
                 longueurInt = log10(nbBytes) + 1;
                 if(nbBytes == 0 || longueurInt != strlen(optarg)){
                     printf("Allocation memoire : impossible, argument '%s' incorrect\n",optarg); 
+                    printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
                 }
                 p = myalloc(nbBytes);
@@ -277,10 +279,12 @@ void gestionModeCli(int argc, char*argv[]){
                 listeSize = tailleListe(memoireAllouee);
                 if(selectionne == 0 || longueurInt != strlen(optarg)){
                     printf("Desallocation memoire : impossible, argument '%s' incorrect.\n",optarg); 
+                    printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
                 }
                 else if(listeSize < selectionne){
                     printf("Desallocation memoire : impossible, indice '%d' superieur au nombre d'element alloue.\n",selectionne); 
+                    printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
                 }
                 Liste listeAdesalloue = rechercheParIndice(memoireAllouee,listeSize-selectionne);
