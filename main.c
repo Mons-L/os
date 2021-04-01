@@ -30,7 +30,7 @@ int main(){
 
 	int liberation1 = freeMemory();
 	if(liberation1 == -1)
-		printf("Resultat : Liberation de la memoire echouee.\n",liberation1);
+		printf("Resultat : Liberation de la memoire echouee.\n");
 	else 
 		printf("Resultat : Liberation de %d bytes de la memoire reussie.\n",liberation1);
 	afficheEspaceMemoire();

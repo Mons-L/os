@@ -48,7 +48,7 @@ int freeMemory(){
 	Liste listeTmpAllouee = memoireAllouee;
     while(listeTmpAllouee != NULL){
 		myfree(listeTmpAllouee->blocMemoire.adresse);
-        listeTmpAllouee = suppTete(listeTmpAllouee);
+       // listeTmpAllouee = suppTete(listeTmpAllouee);
     }
 	// Elle permet, tant que la mémoire libre n'est pas égale à nulle, de récupérer tout 
 	// les bytes utilisés dans le bloc mémoire et de libérer la liste.
