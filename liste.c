@@ -34,7 +34,7 @@ Liste initListe()
  */
 Liste initVariableListe(Liste liste, int nbBytes, void *adresse, Liste suivant)
 {
-    liste = malloc(sizeof(sizeof(int)));
+    liste = malloc(sizeof(int));
     liste->blocMemoire.nbBytes = nbBytes;
     liste->blocMemoire.adresse = adresse;
     liste->suivant = suivant;

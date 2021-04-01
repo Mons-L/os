@@ -45,21 +45,17 @@ int freeMemory(){
     Liste liste;
 	// Elle permet, tant que la mémoire allouée n'est pas égale à nulle, de libérer toutes
 	// les adresses qu'elles a utilisées et la liste en elles-mêmes.
-    while(memoireAllouee != NULL){
-        liste = memoireAllouee;
-        memoireAllouee = memoireAllouee->suivant;
-        myfree(liste->blocMemoire.adresse);
-        free(liste);
-        liste = NULL;
+	Liste listeTmpAllouee = memoireAllouee;
+    while(listeTmpAllouee != NULL){
+		myfree(listeTmpAllouee->blocMemoire.adresse);
+        listeTmpAllouee = suppTete(listeTmpAllouee);
     }
 	// Elle permet, tant que la mémoire libre n'est pas égale à nulle, de récupérer tout 
 	// les bytes utilisés dans le bloc mémoire et de libérer la liste.
-    while(memoireLibre != NULL){
-        liste = memoireLibre;
-        memoireLibre = memoireLibre->suivant;
-        nbBytesRecupere += liste->blocMemoire.nbBytes;
-        free(liste);
-        liste = NULL;
+	Liste listeTmpLibre = memoireLibre;
+    while(listeTmpLibre != NULL){
+		nbBytesRecupere += listeTmpLibre->blocMemoire.nbBytes;
+        listeTmpLibre = suppTete(listeTmpLibre);
     }
 	// Elle permet, si le nombre de byte récupéré est égal à 0, de le placer à -1 en cas d'erreur.
 	// Par exemple, si la mémoire a déja été libérée.
