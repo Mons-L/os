@@ -44,23 +44,24 @@ int initMemory(int nbBytes){
  */
 int freeMemory(){  
     int nbBytesRecupere = 0;
-	// Tant que la liste de mémoire allouée n'est pas vide, on libère toutes
-	// les adresses allouées grâce à la fonction myfree().
+	/* 	Tant que la liste de mémoire allouée n'est pas vide, on libère toutes
+		les adresses allouées grâce à la fonction myfree(). */
     while(memoireAllouee != NULL){
 		int result = myfree(memoireAllouee->blocMemoire.adresse);
 		if(result == -1){
 			return -1;
 		}
     }
-	// Tant que la liste de mémoire libre n'est pas vide, on effectue la somme des bytes 
-	// qui seront récupérés. On supprime ensuite la liste.
+	/* 	Tant que la liste de mémoire libre n'est pas vide, on effectue la somme des bytes 
+	 	qui seront récupérés. On supprime ensuite la liste. */
     while(memoireLibre != NULL){
 		nbBytesRecupere += memoireLibre->blocMemoire.nbBytes;
         memoireLibre = suppTete(memoireLibre);
     }
-	// En cas d'erreur, le nombre de bytes récupéré est placé à -1.
-    if(nbBytesRecupere == 0)
+	/* En cas d'erreur, le nombre de bytes récupéré est placé à -1. */
+    if(nbBytesRecupere == 0){
         nbBytesRecupere = -1;
+	}	
     return nbBytesRecupere;
 }
 
@@ -72,34 +73,35 @@ int freeMemory(){
 void* myalloc(int nbBytes){
 	void* addresseAllouee = NULL;
 	Liste liste = NULL;
-	// Si le nombre de bytes est supérieur à 0, on recherche dans la mémoire libre 
-	// un bloc mémoire avec le nombre de bytes passé en paramètre.
-    if(nbBytes > 0)
+	/* 	Si le nombre de bytes est supérieur à 0, on recherche dans la mémoire libre 
+		un bloc mémoire avec le nombre de bytes passé en paramètre. */
+    if(nbBytes > 0){
         liste = rechercheElement(memoireLibre,nbBytes);
+	}	
 	if(liste != NULL){
-		// Si le nombre de bytes d'un bloc mémoire de la mémoire libre est égale au nombre de bytes 
-		// passé en paramètre, l'adresse allouée devient l'adresse contenue dans le bloc mémoire.
-		// On supprime ensuite ce bloc de la mémoire libre et on l'ajoute à la mémoire allouée.
+		/* 	Si le nombre de bytes d'un bloc mémoire de la mémoire libre est égale au nombre de bytes 
+			passé en paramètre, l'adresse allouée devient l'adresse contenue dans le bloc mémoire.
+			On supprime ensuite ce bloc de la mémoire libre et on l'ajoute à la mémoire allouée. */
 		if(liste->blocMemoire.nbBytes == nbBytes){
 			addresseAllouee = liste->blocMemoire.adresse;
 			memoireAllouee = inserTete(memoireAllouee,nbBytes, liste->blocMemoire.adresse);
 			memoireLibre = suppListe(memoireLibre, liste);
 		}
-		// Si le nombre de bytes d'un bloc mémoire de la mémoire libre est supérieur au nombre de bytes.
+		/* Si le nombre de bytes d'un bloc mémoire de la mémoire libre est supérieur au nombre de bytes. */
 		else{
-			// On ajoute un nouveau bloc avec le nombre de bytes passé en paramètre et l'adresse alloué.
+			/* On ajoute un nouveau bloc avec le nombre de bytes passé en paramètre et l'adresse alloué. */
 			memoireAllouee = inserTete(memoireAllouee,nbBytes, liste->blocMemoire.adresse);
 			addresseAllouee = liste->blocMemoire.adresse;
 			
-			// On ajoute ensuite dans la mémoire libre un nouveau bloc mémoire avec :
-			// Pour adresse, l'adresse du bloc alloué additionné au nombre de bytes alloué à ce dernier.
-			// Pour nombre de bytes, le nombre de bytes initial soustrait avec le nombre de bytes alloué.
+			/* 	On ajoute ensuite dans la mémoire libre un nouveau bloc mémoire avec :
+			 	Pour adresse, l'adresse du bloc alloué additionné au nombre de bytes alloué à ce dernier.
+			 	Pour nombre de bytes, le nombre de bytes initial soustrait avec le nombre de bytes alloué. */
 			int nbBytesRestant = liste->blocMemoire.nbBytes - nbBytes;
 			if(nbBytesRestant > 0){
 				void* adresse = liste->blocMemoire.adresse + nbBytes;
 				memoireLibre = inserTete(memoireLibre,nbBytesRestant,adresse);
 			}
-			// On supprime ensuite ce bloc de la mémoire libre.
+			/* On supprime ensuite ce bloc de la mémoire libre. */
 			memoireLibre = suppListe(memoireLibre, liste);
 		}        	
     }
@@ -113,11 +115,11 @@ void* myalloc(int nbBytes){
  */
  int myfree(void* p){
     int nbBytes = -1;
-	// On recherche un bloc mémoire dans la mémoire allouée avec le pointeur passé en paramètre.
+	/* On recherche un bloc mémoire dans la mémoire allouée avec le pointeur passé en paramètre. */
 	Liste liste = rechercheBlocMemoire(memoireAllouee, p);
-	// Si le pointeur vers l'adresse mémoire recherchée n'est pas NULL et qu'un bloc mémoire correspondant 
-	// à ce pointeur est trouvé, on insère le bloc mémoire, trouvé précédemment, dans la mémoire libre.
-	// On supprime ensuite ce bloc mémoire de la mémoire allouée.
+	/* 	Si le pointeur vers l'adresse mémoire recherchée n'est pas NULL et qu'un bloc mémoire correspondant 
+	 	à ce pointeur est trouvé, on insère le bloc mémoire, trouvé précédemment, dans la mémoire libre.
+	 	On supprime ensuite ce bloc mémoire de la mémoire allouée. */
 	if(p != NULL && liste != NULL ){
 		nbBytes = liste->blocMemoire.nbBytes;
 		memoireLibre = inserTete(memoireLibre,nbBytes,liste->blocMemoire.adresse);
@@ -133,10 +135,12 @@ void* myalloc(int nbBytes){
  * \param [in] nbBytes Nombre de byte du bloc mémoire. Type int.   
  */
  void initMemoryMessage(int nbBytesAlloue,int nbBytes){
-	 if(nbBytesAlloue == 0)     
+	if(nbBytesAlloue == 0){     
 	 	printf("Initialisation de la zone de travail echouee (%d bytes).\n",nbBytes);
-    else    
+	}	 
+    else{
 		printf("Initialisation de la zone de travail reussie (%d bytes).\n",nbBytes);
+	}	
 }
 
 /*!
@@ -144,10 +148,12 @@ void* myalloc(int nbBytes){
  * \param [in] nbBytesRecupere Nombre de byte récupéré du bloc mémoire. Type int. 
  */
 void freeMemoryMessage(int nbBytesRecupere){
-	if(nbBytesRecupere == -1)
+	if(nbBytesRecupere == -1){
 		printf("Recuperation de la zone memoire initialisee pour le programme echouee.\n");
-	else
+	}	
+	else{
 		printf("Recuperation de la zone memoire initialisee pour le programme reussie %d bytes recupere.\n",nbBytesRecupere);
+	}	
 }
 
 /*!
@@ -160,8 +166,9 @@ void myallocMessage(void* p,int nbBytes){
 		printf("Allocation de memoire dans la zone de travail reussi (%d bytes).\n",nbBytes);
 		printf("L'adresse allouee est %p\n",p);
 	}
-	else
+	else{
 		printf("Allocation de memoire dans la zone de travail echouee (%d bytes).\n",nbBytes);
+	}	
 }
 
 /*!
@@ -169,10 +176,12 @@ void myallocMessage(void* p,int nbBytes){
  * \param [in] nbBytesRecupere Nombre de byte récupéré. Type int. 
  */
 void myfreeMessage(int nbBytesRecupere){
-	if(nbBytesRecupere == -1)
+	if(nbBytesRecupere == -1){
 		printf("Desallocation de memoire dans la zone de travail echouee.\n");
-	else
+	}	
+	else{
 		printf("Desallocation de memoire dans la zone de travail reussi %d bytes recupere.\n",nbBytesRecupere);
+	}	
 }
 
 /*!
@@ -182,50 +191,50 @@ void myfreeMessage(int nbBytesRecupere){
  */
 Liste defragmentation(Liste liste){ 
     Liste listeTemp = liste;
-    // Création d'un booleen permettant de connaitre l'état de la défragmentation.
+    /* Création d'un booleen permettant de connaitre l'état de la défragmentation. */
     int defragmente = 0;
     
     while(listeTemp != NULL && defragmente == 0){
         Liste listeCourante = listeTemp;
-        // Tant que la liste courante n'est pas égale à nulle 
+        /* Tant que la liste courante n'est pas égale à nulle. */ 
         while (listeCourante != NULL){
-			// Et que l'adresse du bloc mémoire de la liste temporaire additionée de son nombre de byte est égal
-			//  à l'adresse du bloc mémoire de la liste courante :
+			/* 	Et que l'adresse du bloc mémoire de la liste temporaire additionée de son nombre de byte est égal
+				à l'adresse du bloc mémoire de la liste courante : */
             if(listeTemp->blocMemoire.adresse+listeTemp->blocMemoire.nbBytes == listeCourante->blocMemoire.adresse){
-				// on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
-        		// de bytes de la liste courante.
+				/*	on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
+        			de bytes de la liste courante. */
                 int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
 
-                // On effectue ensuite une insertion en tête de la liste d'espace libre avec l'adresse mémoire de la
-				// liste temporaire et le nombre de bytes additionné précedemment.
+                /* 	On effectue ensuite une insertion en tête de la liste d'espace libre avec l'adresse mémoire de la
+					liste temporaire et le nombre de bytes additionné précedemment. */
                 liste = inserTete(liste,nbBytes,listeTemp->blocMemoire.adresse);
 				
-				// On supprime ensuite les deux blocs mémoires précedents de la liste de mémoire libre
+				/* On supprime ensuite les deux blocs mémoires précedents de la liste de mémoire libre. */
                 liste = suppListe(liste, listeTemp);
                 liste = suppListe(liste, listeCourante);
 
-                // Et on affecte au bouleen "defragmente" la valeur 1.
-                // Cela afin d'indiquer que la liste a été défragmentée.
+                /*	Et on affecte au bouleen "defragmente" la valeur 1.
+                	Cela afin d'indiquer que la liste a été défragmentée. */
                 defragmente = 1;
                 break;
             }
-			// Et que l'adresse du bloc mémoire de la liste courante additionée de son nombre de byte est égal
-			//  à l'adresse du bloc mémoire de la liste temporaire :
+			/* 	Et que l'adresse du bloc mémoire de la liste courante additionée de son nombre de byte est égal
+				à l'adresse du bloc mémoire de la liste temporaire. */
             else if(listeCourante->blocMemoire.adresse+listeCourante->blocMemoire.nbBytes == listeTemp->blocMemoire.adresse){
-				// on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
-        		// de bytes de la liste courante.
+				/* 	on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
+        			de bytes de la liste courante. */
                 int nbBytes = listeTemp->blocMemoire.nbBytes + listeCourante->blocMemoire.nbBytes;
 
-                // On effectue ensuite une insertion en tête de la liste d'espace libre avec l'adresse mémoire de la
-				// liste courante et le nombre de bytes additionné précedemment.
+                /*	On effectue ensuite une insertion en tête de la liste d'espace libre avec l'adresse mémoire de la
+					liste courante et le nombre de bytes additionné précedemment. */
                 liste = inserTete(liste,nbBytes,listeCourante->blocMemoire.adresse);
 
-				// On supprime ensuite les deux blocs mémoires précedents de la liste de mémoire libre
+				/*	On supprime ensuite les deux blocs mémoires précedents de la liste de mémoire libre. */
                 liste = suppListe(liste, listeTemp);
                 liste = suppListe(liste, listeCourante);
                 
-				// Et on affecte au bouleen "defragmentate" la valeur 1.
-                // Cela afin d'indiquer que la liste a été défragmentée.
+				/*	Et on affecte au bouleen "defragmentate" la valeur 1.
+                	Cela afin d'indiquer que la liste a été défragmentée. */
                 defragmente = 1;
                 break;
             }
@@ -233,9 +242,10 @@ Liste defragmentation(Liste liste){
         }
         listeTemp = listeTemp->suivant;     
     }
-    // Si l'entier "defragmente" est égal à 1, on défragmente la nouvelle liste.
-    if(defragmente)
+    /* Si l'entier "defragmente" est égal à 1, on défragmente la nouvelle liste. */
+    if(defragmente){
         liste = defragmentation(liste);
+	}	
     return liste;
 }
 
@@ -248,40 +258,46 @@ Liste defragmentation(Liste liste){
  */
 char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
 	FILE *fichier;
-    int nbMots,nbCar = 0;
+    int nbMots = 0;
+	int nbCar = 0;
+	int i = 0;
     char** mots;
     char caractere;
 
-	// Ouverture du fichier en mode lecture grâce au chemin passé en paramètre.
-	fichier = fopen(filename,"r");
-    FILE *f2 = fopen(filename,"r");
+	/* Ouverture du fichier en mode lecture grâce au chemin passé en paramètre. */
+	if((fichier = fopen(filename,"r")) == NULL){
+		printf("Erreur, fichier introuvable.\n");
+		exit(EXIT_FAILURE);
+	}
 
-    // Tant que le fichier n'est pas arriver à sa fin,
-	// on incrémente le nombre de mot afin de connaitre le nombre de caractère.
-    while((caractere=fgetc(f2)) != EOF){
+    /*	Tant que le fichier n'est pas arriver à sa fin,
+		on incrémente le nombre de mot afin de connaitre le nombre de caractère. */
+    while((caractere=fgetc(fichier)) != EOF){
         nbCar++;
-		// Si les caractères sont égaux à un espace, un \t, un \n ou un \0, le nombre de mot est incrémenté.
-		// Cela afin d'initialiser un tableau de mots.
-		if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0')
+		/* 	Si les caractères sont égaux à un espace, un \t, un \n ou un \0, le nombre de mot est incrémenté.
+			Cela afin d'initialiser un tableau de mots. */
+		if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0'){
             nbMots++;
+		}	
     }
 
-    // On incrémente le nombre de mot de 1 afin de prendre en compte le dernier mot du fichier.
-    if(nbCar>0)
+    /* On incrémente le nombre de mot de 1 afin de prendre en compte le dernier mot du fichier. */
+    if(nbCar>0){
         nbMots++;
+	}	
 
-    // On alloue la mémoire pour le tableau de mots.
+    /* On alloue la mémoire pour le tableau de mots. */
     mots = (char**)malloc(sizeof(char*)*nbMots);
-    for(int i=0;i<nbMots;i++){
+    for(i=0;i<nbMots;i++){
         mots[i] = (char*)malloc(sizeof(char)*longMaxMot);
     }
-
-    // On remplit le tableau de mots.
-    int i = 0;
+	rewind(fichier);
+    /* On remplit le tableau de mots. */
+    i = 0;
     int j = 0;
     while((caractere=fgetc(fichier)) != EOF){
         if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0'){
-			// On remplit le tableau du mot avec des cases vides si toute la place n'est pas utilisée.
+			/* On remplit le tableau du mot avec des cases vides si toute la place n'est pas utilisée. */
             while(j<20){
                 mots[i][j] = '\0';
                 j++;
@@ -294,18 +310,23 @@ char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
             j++;
         }
     }
-    // On remplit le tableau du dernier mot avec des cases vides si toute la place n'est pas utilisée.
+    /* On remplit le tableau du dernier mot avec des cases vides si toute la place n'est pas utilisée. */
     while(j<20){
         mots[i][j] = '\0';
         j++;
     }
 
-	//On affecte la taille du tableau de mots au pointeur tailleTableau
+	/* Décrémentation du nombre de mot afin de ne pas considérer un retour chariot comme un mot. */
+	fseek(fichier, -1, SEEK_END);
+	if(fgetc(fichier) == '\n'){
+		nbMots--;
+	}
+
+	/* On affecte la taille du tableau de mots au pointeur tailleTableau */
 	*tailleTableau = nbMots;
 
-	// Puis on ferme le fichier.
+	/* Puis on ferme le fichier. */
     fclose(fichier);
-    fclose(f2);
 	return mots;
 }
 

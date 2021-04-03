@@ -94,8 +94,9 @@ Liste suppListe(Liste liste, Liste listeAsupp)
             listeTemp = listeTemp->suivant;
         }
         listeTemp = suppTete(listeTemp);
-        if (precedentListe != NULL)
+        if (precedentListe != NULL){
             precedentListe->suivant = listeTemp;
+        }    
     }
     return liste;
 }
@@ -113,8 +114,9 @@ Liste rechercheElement(Liste liste, int nbBytes)
 {
     while (liste != NULL)
     {
-        if (liste->blocMemoire.nbBytes >= nbBytes)
+        if (liste->blocMemoire.nbBytes >= nbBytes){
             break;
+        } 
         liste = liste->suivant;
     }
     return liste;

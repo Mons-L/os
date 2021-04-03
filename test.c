@@ -42,24 +42,26 @@ void affichageAide();
  */
 int main(int argc, char *argv[]){
     if(argc > 1){
-        int option = getopt(argc, argv, "m:a:d:lhif");
-        // Si l'argument entré par l'utilisateur est '-i', le mode "intéractif" est lancé.
-        if(option == 'i'){
+        int option = getopt(argc, argv, "m:a:d:lhif:");
+        /* Si l'option entrée par l'utilisateur est '-i', le mode "intéractif" est lancé. */
+        if(option == 'i' && argc == 2){
             gestionModeInteractif();
         }
-        // Si l'argument entré par l'utilisateur est '-f', le mode "batch" est lancé.
+        /* Si l'argument entré par l'utilisateur est '-f', le mode "batch" est lancé. */
         else if(option == 'f'){
-            getopt(argc,argv,":if:lrx");
             char* filename = optarg;
             gestionModeBatch(filename);
         }
-        // Si l'argument entré par l'utilisateur est '-h', les commandes disponible sont affichées.
+        /* Si l'argument entré par l'utilisateur est '-h', les commandes disponible sont affichées. */
         else if(option =='h'){
             affichageAide();
         }
-        // Sinon, le mode "ligne de commande" est lancé.  
-        else{
+        /* Sinon, le mode "ligne de commande" est lancé. */ 
+        else if(option =='m' || option =='a' || option =='d' || option =='l') {
             gestionModeCli(argc,argv,option);
+        }
+        else{
+            affichageAide(); 
         }
     }
     else{
@@ -87,8 +89,9 @@ void afficherOptions(){
 void recupererChoix(int* choix){
     printf("Votre choix : ");
     scanf("%d",choix);
-    if(*choix <= 5)
+    if(*choix <= 5){
         printf("\nVous avez choisis : %s.\n",choixString[*choix-1]);
+    }    
 }
 
 /*!
@@ -100,45 +103,46 @@ void gestionModeInteractif(){
         int nbBytes = 0;
         int allocAdesalloc = 0;
         do{
-            // Affiche les options et récupère le choix de l'utilisateur.
+            /* Affiche les options et récupère le choix de l'utilisateur. */
             afficherOptions();
             recupererChoix(&choix);
 
             switch (choix){
                 case 1:
-                    // Récuperation du nombre de bytes à initialiser.
+                    /* Récuperation du nombre de bytes à initialiser. */
                     printf("Combien de bytes ?\t");
                     scanf("%d",&nbBytes);
-                    // Initialisation de la mémoire et affichage d'un message sur l'état de l'initialisation.
+                    /* Initialisation de la mémoire et affichage d'un message sur l'état de l'initialisation. */
                     initMemoryMessage(initMemory(nbBytes),nbBytes);
                     break;
 
                 case 2:
-                    // Libération de la mémoire et affichage d'un message sur l'état de la libération.
+                    /* Libération de la mémoire et affichage d'un message sur l'état de la libération. */
                     freeMemoryMessage(freeMemory());
                     break;
 
                 case 3:
-                    // Récuperation du nombre de bytes à allouer.
+                    /* Récuperation du nombre de bytes à allouer. */
                     printf("Combien de bytes ?\t");
                     scanf("%d",&nbBytes);
-                    // Allocation de la mémoire et affichage d'un message sur l'état de l'allocation.
+                    /* Allocation de la mémoire et affichage d'un message sur l'état de l'allocation. */
                     myallocMessage(myalloc(nbBytes),nbBytes);
                     break;
 
                 case 4:
-                    // Récuperation de l'indice de l'allocation à désallouer.
+                    /* Récuperation de l'indice de l'allocation à désallouer. */
                     printf("Quelle allocation souhaitez-vous desallouer ?\t");
                     scanf("%d",&allocAdesalloc);
                     int listeSize = tailleListe(memoireAllouee);
                     if(listeSize >= allocAdesalloc){
-                        // Recherche du bloc mémoire à désallouer en fonction de l'indice.
+                        /* Recherche du bloc mémoire à désallouer en fonction de l'indice. */
                         Liste listeAdesalloue = rechercheParIndice(memoireAllouee,listeSize-allocAdesalloc); 
-                        // Désallocation de la mémoire et affichage d'un message sur l'état de la désallocation.
+                        /* Désallocation de la mémoire et affichage d'un message sur l'état de la désallocation. */
                         myfreeMessage(myfree(listeAdesalloue->blocMemoire.adresse));
                     }
-                    else
+                    else{
                         printf("Erreur l'indice %d est superieur au nombre d'element alloue.\n",allocAdesalloc);
+                    } 
                     break;
 
                 case 5:
@@ -163,27 +167,27 @@ void gestionModeBatch(char* filename){
     int nbMots ;
     char** mots = fileToTab(filename,MAX,&nbMots); 
     
-    // Effectue le traitement en fonction de ce qui a été lu.
+    /* Effectue le traitement en fonction de ce qui a été lu. */
     for(int i=0;i<nbMots;i++){
 
-        // Si le mot lu est "InitMemory" on initialise la mémoire.
+        /* Si le mot lu est "InitMemory" on initialise la mémoire. */
         if(strcmp(mots[i],"InitMemory") == 0){
             i++;
             int nbBytes = atoi(mots[i]);
             int longueurInt = log10(nbBytes) + 1;
 
-            // Si le mot suivant contient des lettres, le programme sera interrompu.
+            /* Si le mot suivant contient des lettres, le programme sera interrompu. */
             if(longueurInt != strlen(mots[i])){
                 printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier.\n",mots[i]);
                 printf("Interruption du programme.\n");
                 exit(EXIT_FAILURE);
             }
 
-            // Sinon, on récupère le nombre de bytes afin d'initialiser la mémoire.
+            /* Sinon, on récupère le nombre de bytes afin d'initialiser la mémoire. */
             else{
                 int status = initMemory(nbBytes);
                 initMemoryMessage(status,nbBytes);
-                // S'il y a une erreur, on interrompt le programme.
+                /* S'il y a une erreur, on interrompt le programme. */
                 if(status == 0){
                     printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
@@ -192,11 +196,11 @@ void gestionModeBatch(char* filename){
             }
         }
         
-        // Si le mot lu est "FreeMemory", on récupère la mémoire de la zone initialement réservée.
+        /* Si le mot lu est "FreeMemory", on récupère la mémoire de la zone initialement réservée. */
         else if(strcmp(mots[i],"FreeMemory") == 0){
             int nbBytesRecupere = freeMemory();
             freeMemoryMessage(nbBytesRecupere);
-            // S'il y a une erreur, on interrompt le programme.
+            /* S'il y a une erreur, on interrompt le programme. */
             if(nbBytesRecupere == -1) {
                 printf("Interruption du programme.\n");
                 exit(EXIT_FAILURE);
@@ -204,24 +208,24 @@ void gestionModeBatch(char* filename){
             printf("\n");
         }
 
-        // Si le mot lu est "Allocation", on alloue de la mémoire.
+        /* Si le mot lu est "Allocation", on alloue de la mémoire. */
         else if(strcmp(mots[i],"Allocation") == 0){
             i++;
             int nbBytes = atoi(mots[i]);
             int longueurInt = log10(nbBytes) + 1;
 
-            // Si le mot suivant contient des lettres, le programme sera interrompu.
+            /* Si le mot suivant contient des lettres, le programme sera interrompu. */
             if(longueurInt != strlen(mots[i])){
                 printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier.\n",mots[i]);
                 printf("Interruption du programme.\n");
                 exit(EXIT_FAILURE);
             }
 
-            // Sinon, on récupère le nombre de bytes afin d'allouer la mémoire.
+            /* Sinon, on récupère le nombre de bytes afin d'allouer la mémoire. */
             else{
                 void* p = myalloc(nbBytes);
                 myallocMessage(p,nbBytes);
-                // S'il y a une erreur, on interrompt le programme.
+                /* S'il y a une erreur, on interrompt le programme. */
                 if(p == NULL){
                     printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
@@ -230,34 +234,36 @@ void gestionModeBatch(char* filename){
             }
         }
         
-        //Si le mot lu est Desallocation, on désalloue de la mémoire.
+        /* Si le mot lu est Desallocation, on désalloue de la mémoire. */
         else if(strcmp(mots[i],"Desallocation") == 0){
             i++;
             int indice = atoi(mots[i]);
             int longueurInt = log10(indice) + 1;
 
-            // Si le mot suivant contient des lettres, le programme sera interrompu.
+            /* Si le mot suivant contient des lettres, le programme sera interrompu. */
             if(longueurInt != strlen(mots[i])){
                 printf("Erreur dans la syntaxe du fichier sur le mot : %s, attendu : entier.\n",mots[i]);
                 printf("Interruption du programme.\n");
                 exit(EXIT_FAILURE);
             }
 
-            // Sinon, on récupère l'indice de l'allocation à désallouer.
+            /* Sinon, on récupère l'indice de l'allocation à désallouer. */
             else{
                 /* On récupère la taille de la liste afin de la parcourir et de désallouer
                    en fonction des allocations faîtes précédemment.*/
                 int listeSize = tailleListe(memoireAllouee);
 
-                // Si l'indice à désallouer est inférieur ou égal à la liste, on effectue la désallocation.
+                /* Si l'indice à désallouer est inférieur ou égal à la liste, on effectue la désallocation. */
                 if(listeSize >= indice){
                     Liste listeAdesalloue = rechercheParIndice(memoireAllouee,listeSize-indice); 
                     int nbBytesRecupere = myfree(listeAdesalloue->blocMemoire.adresse);
                     myfreeMessage(nbBytesRecupere);
-                    if(nbBytesRecupere == -1) exit(EXIT_FAILURE);
+                    if(nbBytesRecupere == -1){ 
+                        exit(EXIT_FAILURE);
+                    }    
                     printf("\n");
                 }
-                // Sinon on interrompt le programme.
+                /* Sinon on interrompt le programme. */
                 else{
                     printf("Erreur l'indice %d de l'element a desallouer est superieur au nombre d'element alloue.\n",indice);
                     printf("Interruption du programme.\n");
@@ -265,7 +271,7 @@ void gestionModeBatch(char* filename){
                 }
             }
         }
-        // Si aucun mot n'est reconnu, on interrompt le programme.
+        /* Si aucun mot n'est reconnu, on interrompt le programme. */
         else{
             printf("Erreur dans la syntaxe du fichier sur le mot : %s.\n",mots[i]);
             printf("Interruption du programme.\n");
@@ -282,7 +288,7 @@ void gestionModeBatch(char* filename){
 void gestionModeCli(int argc, char*argv[], int option){
     printf("Bienvenue dans le mode CLI.\n\n");
 
-    // Tant que toutes les options n'ont pas été lues.
+    /* Tant que toutes les options n'ont pas été lues. */
     do{
         int nbBytes,status,longueurInt,selectionne, listeSize;
         void* p = NULL;
@@ -292,18 +298,20 @@ void gestionModeCli(int argc, char*argv[], int option){
                 nbBytes = 0;
                 nbBytes = atoi(optarg);
                 longueurInt = log10(nbBytes) + 1;
-                // Si le paramètre de l'option contient des lettres, le programme sera interrompu.
+                /* Si le paramètre de l'option contient des lettres, le programme sera interrompu. */
                 if(nbBytes == 0 || longueurInt != strlen(optarg)){
                     printf("Initialisation de la memoire: impossible, argument '%s' incorrect\n",optarg); 
                     printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
                 }
-                // Initialisation de la mémoire avec le paramètre de l'option.
+                /* Initialisation de la mémoire avec le paramètre de l'option. */
                 status = initMemory(nbBytes);
-                // Affichage d'un message sur l'état de l'initialisation.
+                /* Affichage d'un message sur l'état de l'initialisation. */
                 initMemoryMessage(status,nbBytes);
-                // S'il y a une erreur, on interrompt le programme.
-                if(status == 0) exit(EXIT_FAILURE);
+                /* S'il y a une erreur, on interrompt le programme. */
+                if(status == 0){
+                    exit(EXIT_FAILURE);
+                } 
                 printf("\n");
                 break;
 
@@ -311,18 +319,20 @@ void gestionModeCli(int argc, char*argv[], int option){
                 nbBytes = 0;
                 nbBytes = atoi(optarg);
                 longueurInt = log10(nbBytes) + 1;
-                // Si le paramètre de l'option contient des lettres, le programme sera interrompu.
+                /* Si le paramètre de l'option contient des lettres, le programme sera interrompu. */
                 if(nbBytes == 0 || longueurInt != strlen(optarg)){
                     printf("Allocation memoire : impossible, argument '%s' incorrect\n",optarg); 
                     printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
                 }
-                // Allocation de la mémoire avec le paramètre de l'option.
+                /* Allocation de la mémoire avec le paramètre de l'option. */
                 p = myalloc(nbBytes);
-                // Affichage d'un message sur l'état de l'allocation.
+                /* Affichage d'un message sur l'état de l'allocation. */
                 myallocMessage(p,nbBytes);
-                // S'il y a une erreur, on interrompt le programme.
-                if(p == NULL) exit(EXIT_FAILURE);
+                /* S'il y a une erreur, on interrompt le programme. */
+                if(p == NULL){
+                    exit(EXIT_FAILURE);
+                } 
                 printf("\n");;
                 break;
 
@@ -331,42 +341,46 @@ void gestionModeCli(int argc, char*argv[], int option){
                 selectionne = atoi(optarg);
                 longueurInt = log10(selectionne) + 1;
                 listeSize = tailleListe(memoireAllouee);
-                // Si le paramètre de l'option contient des lettres, le programme sera interrompu.
+                /* Si le paramètre de l'option contient des lettres, le programme sera interrompu. */
                 if(selectionne == 0 || longueurInt != strlen(optarg)){
                     printf("Desallocation memoire : impossible, argument '%s' incorrect.\n",optarg); 
                     printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
                 }
-                // Si le paramètre de l'option est supérieur au nombre d'allocation effectuée, le programme sera interrompu.
+                /* Si le paramètre de l'option est supérieur au nombre d'allocation effectuée, le programme sera interrompu. */
                 else if(listeSize < selectionne){
                     printf("Desallocation memoire : impossible, indice '%d' superieur au nombre d'element alloue.\n",selectionne); 
                     printf("Interruption du programme.\n");
                     exit(EXIT_FAILURE);
                 }
                 Liste listeAdesalloue = rechercheParIndice(memoireAllouee,listeSize-selectionne);
-                // Désallocation de la mémoire avec le paramètre de l'option.
+                /* Désallocation de la mémoire avec le paramètre de l'option. */
                 nbBytes = myfree(listeAdesalloue->blocMemoire.adresse);
-                // Affichage d'un message sur l'état de la désallocation.
+                /* Affichage d'un message sur l'état de la désallocation. */
                 myfreeMessage(nbBytes);
-                // S'il y a une erreur, on interrompt le programme.
-                if(nbBytes == -1) exit(EXIT_FAILURE);
+                /* S'il y a une erreur, on interrompt le programme. */
+                if(nbBytes == -1){
+                    exit(EXIT_FAILURE);
+                }
                 printf("\n");;
                 break;
 
             case 'l':
-                // Libération de la mémoire initialement allouée.
+                /* Libération de la mémoire initialement allouée. */
                 nbBytes = freeMemory();
-                // Affichage d'un message sur l'état de la libération de mémoire.
+                /* Affichage d'un message sur l'état de la libération de mémoire. */
                 freeMemoryMessage(nbBytes);
-                // S'il y a une erreur, on interrompt le programme.
-                if(nbBytes == -1) exit(EXIT_FAILURE);
+                /* S'il y a une erreur, on interrompt le programme. */
+                if(nbBytes == -1){
+                    exit(EXIT_FAILURE);
+                }
                 break;
         }
     }while ((option = getopt(argc, argv, "m:a:d:l"))!= -1);
 }
 
 
-//Affichage des options disponible pour le programme.
+/* Affichage des options disponible pour le programme. */
 void affichageAide(){
     printf("Voici toutes les commandes disponibles pour ce programme : \n");
     printf("\n-i\t\tUtilisation du programme en mode interactif.\n");
