@@ -1,11 +1,9 @@
 /*!
  * \file main.c
- * \brief Fichier principal permettant l'exécution de toute les méthodes du projet.
+ * \brief Fichier principal permettant le test de toute les fonctions du projet.
  * \author Salma BENCHELKHA - Mouncif LEKMITI - Farah MANOUBI
  * \version 1.0
  * \date 2 avril 2021
- * 
- * Ce fichier permet le test de tout les fonctions crées.
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,16 +12,14 @@
 #include "include/utilitaire.h"
 
 Liste memoireLibre, memoireAllouee;
-
- void afficheEspaceMemoire();
-
+void afficheEspaceMemoire();
 
 /*!
  * \brief Fonction principale.
- * \return Renvoie 0.
+ * \return Renvoie 0 si il n'y a aucune erreur.
  */
 int main(){
-	// Test de la libération de la mémoire avant l'initialisation de la mémoire.
+	// Test de la liberation de la memoire lorsque celle-ci n'a pas encore ete initialisee.
 	printf("\nFonction : freeMemory()\n");
 	printf("Test de la liberation de la memoire lorsque celle-ci n'a pas encore ete initialisee.\n");
 	printf("Attendu : Echec.\n");
@@ -60,7 +56,7 @@ int main(){
 		printf("Resultat : Desallocation de %d bytes reussie.\n",nbBytes);
 	afficheEspaceMemoire();
 
-	// Test de l'initialisation de la mémoire.
+	// Test de l'initialisation de la memoire avec 900 bytes.
 	printf("\nFonction : initMemory(nbBytes)\n");
 	printf("Test de l'initialisation de la memoire avec 900 bytes.\n");
 	printf("Attendu : Reussite.\n");
@@ -112,7 +108,7 @@ int main(){
 		printf("Resultat : Allocation de %d bytes echouee.\n",nbSuperieur);
 	afficheEspaceMemoire();
 	
-	// Test de la désallocation de mémoire de 500 bytes après l'initialisation de la memoire.
+	// Test de la desallocation memoire de l'allocation precedente de 500 bytes.
 	printf("\nFonction : myfree(p)\n");
 	printf("Test de la desallocation memoire de l'allocation precedente de 500 bytes.\n");
 	printf("Attendu : Reussite.\n");
@@ -124,7 +120,7 @@ int main(){
 		printf("Resultat : Desallocation de %d bits reussie.\n",desallocationInf);
 	afficheEspaceMemoire();
 	
-	// Test de la désallocation de mémoire de 1200 bytes après l'initialisation de la memoire.
+	// Test de la desallocation memoire de l'allocation precedente de 1200 bytes.
 	printf("\nFonction : myfree(p)\n");
 	printf("Test de la desallocation memoire de l'allocation precedente de 1200 bytes.\n");
 	printf("Attendu : Echec.\n");
@@ -134,6 +130,31 @@ int main(){
 		printf("Resultat : Desallocation de %d bytes echouee.\n",nbSuperieur);
 	else
 		printf("Resultat : Desallocation de %d bits reussie.\n",desallocationSup);
+	afficheEspaceMemoire();
+
+	// Test de la desallocation memoire de l'allocation precedente de 40 bytes.
+	printf("\nFonction : myfree(p)\n");
+	printf("Test de la desallocation memoire de l'allocation precedente de 40 bytes.\n");
+	printf("Attendu : Reussite.\n");
+	int desallocationInter = myfree(allocationInter);
+
+	if(desallocationInter == -1)
+		printf("Resultat : Desallocation de %d bytes echouee.\n",nbIntermediaire);
+	else
+		printf("Resultat : Desallocation de %d bits reussie.\n",desallocationInter);
+	afficheEspaceMemoire();
+	
+	// Test de l'allocation de mémoire de 800 bytes après l'initialisation de la mémoire.
+	printf("\nFonction : myalloc(nbBytes)\n");
+	printf("Test de l'allocation de memoire de 800 bytes apres l'initialisation de la memoire.\n");
+	printf("Attendu : Reussite.\n");
+	int nbFinal = 800;
+	void* allocationFinal = myalloc(nbFinal);
+
+	if(allocationFinal != NULL)
+		printf("Resultat : Allocation de %d bytes reussie.\n",nbFinal);
+	else
+		printf("Resultat : Allocation de %d bytes echouee.\n",nbFinal);
 	afficheEspaceMemoire();
 
 	// Test de la libération de la mémoire.
@@ -147,7 +168,7 @@ int main(){
 		printf("Resultat : Liberation de %d bytes de la memoire reussie.\n",recuperation);
 	afficheEspaceMemoire();
 
-	// Test de l'allocation de mémoire après avoir libéré la mémoire.
+	// Test de l'allocation de memoire de 300 bytes apres la liberation de la memoire.
 	printf("\nFonction : myalloc(nbBytes)\n");
 	printf("Test de l'allocation de memoire de 300 bytes apres la liberation de la memoire.\n");
 	printf("Attendu : Echec.\n");

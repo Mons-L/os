@@ -43,7 +43,7 @@ Liste initVariableListe(Liste liste, int nbBytes, void *adresse, Liste suivant)
 
 /*!
  * \brief Fonction permettant l'insertion d'une liste en tête d'une liste chainée.
- * \param [in] liste Liste où sera inserée la liste en tête. Type Liste
+ * \param [in] liste Liste où sera insérée la liste en tête. Type Liste
  * \param [in] nbBytes Nombre de byte du bloc mémoire pour la liste à inserer. Type int.  
  * \param [in] adresse pointeur vers une adresse mémoire pour la liste à inserer. Type void*. 
  * \return Une liste chainée avec en tête la nouvelle liste.

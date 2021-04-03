@@ -187,9 +187,10 @@ Liste defragmentation(Liste liste){
     
     while(listeTemp != NULL && defragmente == 0){
         Liste listeCourante = listeTemp;
-        // Tant que la liste courante n'est pas égale à nulle et que l'adresse du bloc mémoire de la liste 
-        // temporaire additionée de son nombre de byte est égal à l'adresse du bloc mémoire de la liste courante,
+        // Tant que la liste courante n'est pas égale à nulle 
         while (listeCourante != NULL){
+			// Et que l'adresse du bloc mémoire de la liste temporaire additionée de son nombre de byte est égal
+			//  à l'adresse du bloc mémoire de la liste courante :
             if(listeTemp->blocMemoire.adresse+listeTemp->blocMemoire.nbBytes == listeCourante->blocMemoire.adresse){
 				// on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
         		// de bytes de la liste courante.
@@ -203,11 +204,13 @@ Liste defragmentation(Liste liste){
                 liste = suppListe(liste, listeTemp);
                 liste = suppListe(liste, listeCourante);
 
-                // Et on affecte au bouleen "defragmentate" la valeur 1.
+                // Et on affecte au bouleen "defragmente" la valeur 1.
                 // Cela afin d'indiquer que la liste a été défragmentée.
                 defragmente = 1;
                 break;
             }
+			// Et que l'adresse du bloc mémoire de la liste courante additionée de son nombre de byte est égal
+			//  à l'adresse du bloc mémoire de la liste temporaire :
             else if(listeCourante->blocMemoire.adresse+listeCourante->blocMemoire.nbBytes == listeTemp->blocMemoire.adresse){
 				// on associe à un entier le nombre de bytes de la liste temporaire additionnée du nombre 
         		// de bytes de la liste courante.
@@ -257,7 +260,7 @@ char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
 	// on incrémente le nombre de mot afin de connaitre le nombre de caractère.
     while((caractere=fgetc(f2)) != EOF){
         nbCar++;
-		// Si les caractères sont égals à un espace, un \t, un \n ou un \0, le nombre de mot est incrémenté.
+		// Si les caractères sont égaux à un espace, un \t, un \n ou un \0, le nombre de mot est incrémenté.
 		// Cela afin d'initialiser un tableau de mots.
 		if (caractere == ' ' || caractere == '\t' || caractere == '\n' || caractere == '\0')
             nbMots++;
