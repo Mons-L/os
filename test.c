@@ -9,6 +9,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include<math.h>
+#include<getopt.h>
 #include <unistd.h>
 #include "include/structure.h"
 #include "include/liste.h"
@@ -166,9 +167,10 @@ void gestionModeBatch(char* filename){
     printf("\nBienvenue dans le mode batch du programme.\n\n");
     int nbMots ;
     char** mots = fileToTab(filename,MAX,&nbMots); 
+    int i;
     
     /* Effectue le traitement en fonction de ce qui a été lu. */
-    for(int i=0;i<nbMots;i++){
+    for(i=0;i<nbMots;i++){
 
         /* Si le mot lu est "InitMemory" on initialise la mémoire. */
         if(strcmp(mots[i],"InitMemory") == 0){
