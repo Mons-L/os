@@ -122,7 +122,7 @@ void* myalloc(int nbBytes){
 		nbBytes = liste->blocMemoire.nbBytes;
 		memoireLibre = inserTete(memoireLibre,nbBytes,liste->blocMemoire.adresse);
 		memoireAllouee = suppListe(memoireAllouee,liste);
-		//memoireLibre = defragmentation(memoireLibre); A TESTER
+		memoireLibre = defragmentation(memoireLibre);
 	}
     return nbBytes;
  }
