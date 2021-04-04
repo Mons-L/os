@@ -253,7 +253,7 @@ Liste defragmentation(Liste liste){
  * \brief Fonction permettant de remplir un tableau à partir d'un fichier.
  * \param [in] filename Chemin du fichier. Type char*.
  * \param [in] longMaxMot Entier représentant la taille de la longueur maximal d'un mot. Type int.
- * \param [in, out] tailleTableau Entier où sera stocker la taille du tableau. Type int*.
+ * \param [in, out] tailleTableau pointeur vers l'entier où sera stocker la taille du tableau. Type int*.
  * \return Un tableau contenant les mots du fichier passé en paramètre.
  */
 char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
