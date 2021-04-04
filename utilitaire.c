@@ -29,8 +29,8 @@
 int initMemory(int nbBytes){
 	void* adresse = malloc(nbBytes);
 	int nbBytesAlloue = 0;
-	memoireAllouee = NULL;
-	memoireLibre = NULL;
+	memoireAllouee = initListe();
+	memoireLibre = initListe();
 	if(adresse != NULL){
 		memoireLibre = inserTete(memoireLibre,nbBytes,adresse);
 		nbBytesAlloue = nbBytes;
@@ -72,7 +72,7 @@ int freeMemory(){
  */
 void* myalloc(int nbBytes){
 	void* addresseAllouee = NULL;
-	Liste liste = NULL;
+	Liste liste = initListe();
 	/* 	Si le nombre de bytes est supérieur à 0, on recherche dans la mémoire libre 
 		un bloc mémoire avec le nombre de bytes passé en paramètre. */
     if(nbBytes > 0){
@@ -97,10 +97,9 @@ void* myalloc(int nbBytes){
 			 	Pour adresse, l'adresse du bloc alloué additionné au nombre de bytes alloué à ce dernier.
 			 	Pour nombre de bytes, le nombre de bytes initial soustrait avec le nombre de bytes alloué. */
 			int nbBytesRestant = liste->blocMemoire.nbBytes - nbBytes;
-			if(nbBytesRestant > 0){
-				void* adresse = liste->blocMemoire.adresse + nbBytes;
-				memoireLibre = inserTete(memoireLibre,nbBytesRestant,adresse);
-			}
+			void* adresse = liste->blocMemoire.adresse + nbBytes;
+			memoireLibre = inserTete(memoireLibre,nbBytesRestant,adresse);
+			
 			/* On supprime ensuite ce bloc de la mémoire libre. */
 			memoireLibre = suppListe(memoireLibre, liste);
 		}        	
@@ -329,4 +328,3 @@ char** fileToTab(char* filename,int longMaxMot,int* tailleTableau){
     fclose(fichier);
 	return mots;
 }
-
